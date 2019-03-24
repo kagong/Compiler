@@ -21,11 +21,12 @@ typedef enum{
     /* book-keeping tokens */
     ENDFILE,ERROR,
     /* reserved words */
-    IF,THEN,ELSE,END,REPEAT,UNTIL, READ,WRITE,
+    IF,ELSE,INT,VOID,WHILE,RETURN,
     /* multicharacter tokens */
     ID,NUM,
     /* special symbols */
-    ASSIGN, EQ,LT, PLUS,MINUS ,TIMES,OVER, LPAREN, RPAREN,SEMI
+     PLUS, MINUS, TIMES, OVER, GET, GT, LET, LT, EQ, ASSIGN, NEQ, SEMI,COMMA, 
+     LPAREN, RPAREN, LCBRAKET, RCBRAKET, LSBRAKET, RSBRAKET
 } TokenType;
 
 extern FILE* source; /* source code text file */
@@ -52,10 +53,15 @@ typedef struct treeNode{
     struct treeNode * sibling;
     int lineno;
     NodeKind nodekind;
-    union { StmtKind stmt; ExpKind exp;} kind;
-    union { TokenType op;
+    union { 
+        StmtKind stmt; 
+        ExpKind exp;
+    }kind;
+    union { 
+        TokenType op;
         int val;
-        char *name; } attr;
+        char *name; 
+    } attr;
     ExpType type; /* for type checking of exps */
 } TreeNode;
 

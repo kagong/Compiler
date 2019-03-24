@@ -43,7 +43,7 @@ int main( int argc, char * argv[]){
     }
     strcpy(pgm,argv[1]);
     if (strchr (pgm,'.') == NULL)
-        strcat(pgm, ".tny");
+        strcat(pgm, ".c");
 
     source = fopen(pgm, "r");
     if (source==NULL){ 
@@ -52,7 +52,7 @@ int main( int argc, char * argv[]){
     }
 
     listing = stdout; /* send listing to screen */
-    fprintf (listing, "\nTINY COMPlLATION: %s\n" ,pgm);
+    fprintf (listing, "\nC- COMPlLATION: %s\n" ,pgm);
 #if NO_PARSE
     while (getToken() != ENDFILE) ;
 #else

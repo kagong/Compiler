@@ -7,27 +7,37 @@
 void printToken( TokenType token, const char* tokenString ){
     switch (token){ 
         case IF:
-        case THEN:
         case ELSE:
-        case END:
-        case REPEAT:
-        case UNTIL:
-        case READ:
-        case WRITE:     fprintf(listing,"reserved word: %s\n" , tokenString);   break;
-        case ASSIGN:    fprintf(listing,":=\n");                                break;
-        case LT:        fprintf(listing,"<\n");                                 break;
-        case EQ:        fprintf(listing,"=\n");                                 break;
-        case LPAREN:    fprintf(listing," (\n");                                break;
-        case RPAREN:    fprintf(listing,") \n");                                break;
-        case SEMI:      fprintf(listing,"; \n");                                break;
+        case INT:
+        case VOID:
+        case WHILE:
+        case RETURN:    fprintf(listing,"reserved word: %s\n" , tokenString);   break;
+
+        case NUM:       fprintf(listing,"NUM, val= %s\n",tokenString);          break;
+        case ID:        fprintf(listing,"ID, name= %s\n",tokenString);          break;
+
         case PLUS:      fprintf(listing,"+\n");                                 break;
         case MINUS:     fprintf(listing,"-\n");                                 break;
         case TIMES:     fprintf(listing,"*\n");                                 break;
         case OVER:      fprintf(listing," /\n");                                break;
-        case ENDFILE:   fprintf(listing,"EOF\n");                               break;
-        case NUM:       fprintf(listing,"NUM, val= %s\n",tokenString);          break;
-        case ID:        fprintf(listing,"ID, name= %s\n",tokenString);          break;
+        case GET:       fprintf(listing,"<=\n");                                break;
+        case GT:        fprintf(listing,"<\n");                                 break;
+        case LET:       fprintf(listing,">=\n");                                break;
+        case LT:        fprintf(listing,">\n");                                 break;
+        case EQ:        fprintf(listing,"==\n");                                break;
+        case ASSIGN:    fprintf(listing,"=\n");                                 break;
+        case NEQ:       fprintf(listing,"!=\n");                                break;
+        case SEMI:      fprintf(listing,";\n");                                 break;
+        case COMMA:     fprintf(listing,",\n");                                 break;
+        case LPAREN:    fprintf(listing,"(\n");                                 break;
+        case RPAREN:    fprintf(listing,")\n");                                 break;
+        case LCBRAKET:  fprintf(listing,"{\n");                                 break;
+        case RCBRAKET:  fprintf(listing,"}\n");                                 break;
+        case LSBRAKET:  fprintf(listing,"[\n");                                 break;
+        case RSBRAKET:  fprintf(listing,"]\n");                                 break;
+
         case ERROR:     fprintf(listing,"ERROR: %s\n",tokenString);             break;
+        case ENDFILE:   fprintf(listing,"EOF\n");                               break;
         default:        fprintf(listing,"Unknown token:: %d\n",token);
     }
 }
