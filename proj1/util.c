@@ -5,41 +5,44 @@
  *  * and its lexeme to the listing file
  *   */
 void printToken( TokenType token, const char* tokenString ){
+    char *token_name = NULL;
     switch (token){ 
-        case IF:
-        case ELSE:
-        case INT:
-        case VOID:
-        case WHILE:
-        case RETURN:    fprintf(listing,"reserved word: %s\n" , tokenString);   break;
+        case IF:        token_name = "IF";      break;
+        case ELSE:      token_name = "ELSE";    break;
+        case INT:       token_name = "INT";     break; 
+        case VOID:      token_name = "VOID";    break;
+        case WHILE:     token_name = "WHILE";   break;
+        case RETURN:    token_name = "RETURN";  break;
 
-        case NUM:       fprintf(listing,"NUM, val= %s\n",tokenString);          break;
-        case ID:        fprintf(listing,"ID, name= %s\n",tokenString);          break;
+        case NUM:       token_name = "NUM";     break;
+        case ID:        token_name = "ID";      break;
 
-        case PLUS:      fprintf(listing,"+\n");                                 break;
-        case MINUS:     fprintf(listing,"-\n");                                 break;
-        case TIMES:     fprintf(listing,"*\n");                                 break;
-        case OVER:      fprintf(listing," /\n");                                break;
-        case GET:       fprintf(listing,"<=\n");                                break;
-        case GT:        fprintf(listing,"<\n");                                 break;
-        case LET:       fprintf(listing,">=\n");                                break;
-        case LT:        fprintf(listing,">\n");                                 break;
-        case EQ:        fprintf(listing,"==\n");                                break;
-        case ASSIGN:    fprintf(listing,"=\n");                                 break;
-        case NEQ:       fprintf(listing,"!=\n");                                break;
-        case SEMI:      fprintf(listing,";\n");                                 break;
-        case COMMA:     fprintf(listing,",\n");                                 break;
-        case LPAREN:    fprintf(listing,"(\n");                                 break;
-        case RPAREN:    fprintf(listing,")\n");                                 break;
-        case LCBRAKET:  fprintf(listing,"{\n");                                 break;
-        case RCBRAKET:  fprintf(listing,"}\n");                                 break;
-        case LSBRAKET:  fprintf(listing,"[\n");                                 break;
-        case RSBRAKET:  fprintf(listing,"]\n");                                 break;
+        case PLUS:      token_name = "+";       break;
+        case MINUS:     token_name = "-";       break;
+        case TIMES:     token_name = "*";       break;
+        case OVER:      token_name = "/";       break;
+        case GET:       token_name = "<=";      break;
+        case GT:        token_name = "<";       break;
+        case LET:       token_name = ">=";      break;
+        case LT:        token_name = ">";       break;
+        case EQ:        token_name = "==";      break;
+        case ASSIGN:    token_name = "=";       break;
+        case NEQ:       token_name = "!=";      break;
+        case SEMI:      token_name = ";";       break;
+        case COMMA:     token_name = ",";       break;
+        case LPAREN:    token_name = "(";       break;
+        case RPAREN:    token_name = ")";       break;
+        case LCBRAKET:  token_name = "{";       break;
+        case RCBRAKET:  token_name = "}";       break;
+        case LSBRAKET:  token_name = "[";       break;
+        case RSBRAKET:  token_name = "]";       break;
+        case ERROR:     token_name = "ERROR";   break;
+        case ENDFILE:   token_name = "ENDFILE"; break;
+        default:        token_name = "UNKNOWN"; break;
 
-        case ERROR:     fprintf(listing,"ERROR: %s\n",tokenString);             break;
-        case ENDFILE:   fprintf(listing,"EOF\n");                               break;
-        default:        fprintf(listing,"Unknown token:: %d\n",token);
     }
+    fprintf(listing,"%20s%20s\n",token_name,tokenString);     
+
 }
 
 TreeNode * newStmtNode(StmtKind kind){

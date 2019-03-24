@@ -14,10 +14,8 @@ digit       [0-9]
 number      {digit}+
 letter      [a-zA-Z]
 identifier  {letter}+
-newline     \n
+newline     \r?\n
 whitespace  [ \t]+
-
-
 %%
 "if"        {return IF;}
 "else"      {return ELSE;}
@@ -47,13 +45,18 @@ whitespace  [ \t]+
 "]"         {return RSBRAKET;}
 "/*"        {register int c;
                 for(;;){
-                    while((c = input())!= '*' && c != EOF);
+                    while((c = input())!= '*' && c != EOF)
+                        if(c == '\n') 
+                            lineno++;
                     if(c =='*'){
                         while((c =input())=='*');
+                        if(c == '\n') 
+                             lineno++;
                         if(c == '/')
                             break;
                     }
                     if(c == EOF){
+                        yytext = "Comment Error";
                         return ERROR;
                     }
                 }
@@ -62,7 +65,8 @@ whitespace  [ \t]+
 {identifier}    {return ID;}
 {number}        {return NUM;}
 {newline}       {lineno++;}
-{whitespace}    {}
+{whitespace}    {}  
+
 
 <<EOF>>         {return ENDFILE;}
 
@@ -77,12 +81,14 @@ TokenType getToken(void){
         lineno++;
         yyin = source;
         yyout = listing;
+        fprintf(listing,"%20s%20s%20s\n","line number","token","lexeme");
+        fprintf(listing,"%s\n","-----------------------------------------------------------------");
     }
 
     currentToken = yylex();
     strncpy(tokenString,yytext,MAXTOKENLEN);
     if(TraceScan){
-        fprintf(listing,"\t%d: ",lineno);
+        fprintf(listing,"%19d: ",lineno);
         printToken(currentToken,tokenString);
     }
     return currentToken;
