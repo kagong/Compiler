@@ -37,7 +37,7 @@ void printToken( TokenType token, const char* tokenString ){
         case LSBRAKET:  token_name = "[";       break;
         case RSBRAKET:  token_name = "]";       break;
         case ERROR:     token_name = "ERROR";   break;
-        case ENDFILE:   token_name = "EOF"; break;
+        case ENDFILE:   token_name = "ENDFILE"; break;
         default:        token_name = "UNKNOWN"; break;
 
     }
