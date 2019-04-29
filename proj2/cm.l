@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
+#include "parse.h"
+
     /* lexeme of identifier or reserved word */
 #define MAXTOKENLEN 40
 char tokenString[MAXTOKENLEN+1];
@@ -86,10 +88,10 @@ TokenType getToken(void){
     }
 
     currentToken = yylex();
-    strncpy(tokenString,yytext,MAXTOKENLEN);
-    if(TraceScan){
-        fprintf(listing,"%19d: ",lineno);
-        printToken(currentToken,tokenString);
-    }
+//    strncpy(tokenString,yytext,MAXTOKENLEN);
+//    if(TraceScan){
+//        fprintf(listing,"%19d: ",lineno);
+//        printToken(currentToken,tokenString);
+//    }
     return currentToken;
 }
