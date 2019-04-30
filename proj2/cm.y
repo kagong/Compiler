@@ -3,159 +3,151 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
-#include "parse.h"
+//#include "parse.h"
 
 #define YYSTYPE TreeNode *
 static char * savedName; /* for use in assignments */
 static int savedLineNo; /* ditto */
 static TreeNode * savedTree; /* stores syntax tree for later return */
 
+int yyerror(char * message);
+static int yylex(void);
+
 %}
-
-%token IF THEN ELSE END REPEAT UNTIL READ WRITE
+%token ENDFILE ERROR
+%token IF ELSE INT VOID WHILE RETURN
 %token ID NUM
-%token ASSIGN EQ LT PLUS MINUS TIMES OVER LPAREN RPAREN SEMI
-%token ERROR
+%token PLUS MINUS TIMES OVER GET GT LET LT EQ ASSIGN NEQ SEMI COMMA LPAREN RPAREN LCBRAKET RCBRAKET LSBRAKET RSBRAKET
 
-%% /* Grarnmar for TINY */
-program         : stmt_seq                  {savedTree = $1;}
-                ;
+%start program
+%%
+program                 :   declaration-list                {savedTree = $1;}
+                        ;
 
-stmt_seq        : stmt_seq SEMI stmt        
-                    {
-                        YYSTYPE t = $1;
-                        if (t != NULL){ 
-                        while (t->sibling != NULL)
-                            t = t->sibling;
-                        t->sibling = $3;
-                        $$ = $1; }
-                        else $$ = $3;
-                    }
-                | stmt                      { $$ = $1; }
-                ;
+declaration-list        :   declaration-list declaration    { }
+                        |   declaration                     {}
+                        ;
 
-stmt            : if_stmt                   { $$ = $1;}
-                | repeat_stmt               { $$ = $1;}
-                | assign_stmt               { $$ = $1;}
-                | read_stmt                 { $$ = $1; }
-                | write_stmt                { $$ = $1; }
-                | error                     { $$ = NULL; }
-                ;
-if_stmt         : IF exp THEN stmt_seq END  
-                    { 
-                        $$ = newStmtNode(IfK); 
-                        $$->child[0] = $2;
-                        $$->child[1] = $4;
-                    }
-                | IF exp THEN stmt_seq ELSE stmt_seq END
-                    { 
-                        $$ = newStmtNode(IfK);
-                        $$->child[0] = $2;
-                        $$->child[1] = $4;
-                        $$->child[2] = $6;
-                    }
-                ;
-repeat_stmt     : REPEAT stmt_seq UNTIL exp
-                    {
-                        $$ = newStmtNode(RepeatK);
-                        $$->child[0] = $2;
-                        $$->child[1] = $4;
-                    }
-                ;
-assign_stmt     : ID 
-                    { 
-                        savedName = copyString(tokenString);
-                        savedLineNo = lineno; 
-                    }
-                  ASSIGN exp
-                    { 
-                        $$ = newStmtNode(AssignK);
-                        $$->child[0] = $4;
-                        $$->attr.name = savedName;
-                        $$->lineno = savedLineNo;
-                    }
-                ;
-read_stmt       : READ ID
-                    { 
-                        $$ = newStmtNode(ReadK);
-                        $$->attr.name = copyString(tokenString);
-                    }
-                ;
+declaration             :   var-declaration                 {}
+                        |   fun-declaration                 {}
+                        ;
 
-write_stmt      : WRITE exp
-                    { 
-                        $$ = newStmtNode(WriteK);
-                        $$->child[0] = $2;
-                    }
-                ;
-exp             : simple_exp LT simple_exp
-                    { 
-                        $$ = newExpNode(OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;
-                        $$->attr.op = LT;
-                    }
-                | simple_exp EQ simple_exp
-                    { 
-                        $$ = newExpNode(OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;
-                        $$->attr.op = EQ;
-                    }
-                | simple_exp                { $$ = $1;}
-                ;
+var-declaration         :   type-specifier ID SEMI              {}
+                        |   type-specifier ID LSBRAKET NUM RSBRAKET SEMI         {}
+                        ;
 
-simple_exp      : simple_exp PLUS term
-                    { 
-                        $$ = newExpNode(OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;
-                        $$->attr.op= PLUS;
-                    }
-                | simple_exp MINUS term
-                    { 
-                        $$ = newExpNode( OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;  
-                        $$->attr.op = MINUS;
-                    }
-                | term { $$ = $1; }
-                ;
-term            : term TIMES factor
-                    { 
-                        $$ = newExpNode(OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;
-                        $$->attr.op = TlMES;
-                    }
-                | term OVER factor
-                    { 
-                        $$ = newExpNode(OpK);
-                        $$->child[0] = $1;
-                        $$->child[1] = $3;
-                        $$->attr.op = OVER;
-                    }
-                | factor { $$ = $1; }
-                ;
-factor          : LPAREN exp RPAREN         { $$ = $2; }
-                | NUM
-                    { 
-                        $$ = newExpNode(ConstK);
-                        $$->attr.val = atoi(tokenString);
-                    }
-                | ID 
-                    { 
-                        $$ = newEXPNode(IdK) ;
-                        $$->attr.name = copyString(tokenString);
-                    }
-                | error                     { $$ = NULL;}
-                ;
+type-specifier          :   INT|VOID
+                        ;
+
+fun-declaration        :   type-specifier ID LPAREN params RPAREN compound-stmt  {}
+                        ;
+
+params                  :   param-list                              {}
+                        |   VOID
+                        ;
+
+param-list              :   param-list COMMA param                        {}
+                        |   param                                   {}
+                        ;
+
+param                   :   type-specifier ID                       {}
+                        |   type-specifier ID LSBRAKET RSBRAKET                 {}
+                        ;
+
+compound-stmt           :   LCBRAKET local-declarations statement-list RCBRAKET    {}
+                        ;
+
+local-declarations      :   local-declarations var-declaration      {}
+                        |   empty
+                        ;
+
+statement-list          :   statement-list statement                {}
+                        |   empty
+                        ;
+
+statement               :   expression-stmt                        {}
+                        |   compound-stmt                           {}
+                        |   selection-stmt                          {}
+                        |   iteration-stmt                          {}
+                        |   return-stmt                             {}
+                        ;
+
+expression-stmt         :   expression SEMI                            {}
+                        |   SEMI
+                        ;
+
+selection-stmt          :   IF LPAREN expression RPAREN statement       {}
+                        |   IF LPAREN expression RPAREN statement ELSE statement    {}
+                        ;
+
+iteration-stmt         :   WHILE LPAREN expression RPAREN statement        {}
+                        ;
+
+return-stmt             :   RETURN SEMI                 {}
+                        |   RETURN expression SEMI      {}
+                        ;
+
+expression              :   var ASSIGN expression      {}
+                        |   simple-expression           {}
+                        ;
+
+var                     :   ID  {}
+                        |   ID LSBRAKET expression RSBRAKET  {}
+                        ;
+
+simple-expression      :   additive-expression relop additive-expression   {}
+                        |   additive-expression                             {}
+                        ;
+
+relop                   :   LT  {}
+                        |   LET {}
+                        |   GT  {}
+                        |   GET {}
+                        |   EQ  {}
+                        |   NEQ {}
+                        ;
+                        
+additive-expression     :   additive-expression addop term      {}
+                        |   term                    {}
+                        ;
+
+
+addop                   :   PLUS                       {}
+                        |   MINUS                       {}
+                        ;
+
+term                    :   term mulop factor          {}
+                        |   factor                  {}
+                        ;
+
+mulop                   :   TIMES   {}
+                        |   OVER   {}
+                        ;
+
+factor                  :   LPAREN expression RPAREN        {}
+                        |   var {}
+                        |   call {}
+                        |   NUM {}
+                        ;
+
+call                    :   ID LPAREN args RPAREN       {}
+                        ;
+
+args                    :   arg-list    {}
+                        |   empty
+                        ;
+
+arg-list                :   arg-list COMMA expression       {}
+                        |   expression      {}
+                        ;
+empty                   :           {}
+                        ;
 %%
 int yyerror(char * message){
-    fprintf(listing, "Syntax error at line %d: %s\n" ,lineno,message);
-    fprintf(listing, "Current token: ");
-    printToken(yychar,tokenString);
-    Erro = TRUE;
+//    fprintf(listing, "Syntax error at line %d: %s\n" ,lineno,message);
+  //  fprintf(listing, "Current token: ");
+   // printToken(yychar,tokenString);
+   // Erro = TRUE;
     return 0;
 }
 
@@ -165,7 +157,8 @@ int yyerror(char * message){
 * the TINY scanner
 */
 static int yylex(void){
-    return getToken(); 
+    int token = getToken();
+    return token;
 }
 
 TreeNode * parse(void){

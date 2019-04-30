@@ -1,10 +1,10 @@
-%option noyywrap
 
+%option noyywrap
 %{
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
-#include "parse.h"
+//#include "parse.h"
 
     /* lexeme of identifier or reserved word */
 #define MAXTOKENLEN 40
