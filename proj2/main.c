@@ -1,8 +1,8 @@
 #include "globals.h"
 
-#define NO_PARSE TRUE
+#define NO_PARSE FALSE
 
-#define NO_ANALYZE FALSE
+#define NO_ANALYZE TRUE
 
 #define NO_CODE TRUE
 

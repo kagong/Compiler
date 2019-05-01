@@ -4,11 +4,9 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
-//#include "parse.h"
+#include "cm.tab.h"
 
     /* lexeme of identifier or reserved word */
-#define MAXTOKENLEN 40
-char tokenString[MAXTOKENLEN+1];
 %}
 
 
@@ -83,12 +81,11 @@ TokenType getToken(void){
         lineno++;
         yyin = source;
         yyout = listing;
-        fprintf(listing,"%20s%20s%20s\n","line number","token","lexeme");
-        fprintf(listing,"%s\n","-----------------------------------------------------------------");
     }
 
     currentToken = yylex();
-//    strncpy(tokenString,yytext,MAXTOKENLEN);
+    strncpy(prev,tokenString,MAXTOKENLEN);
+    strncpy(tokenString,yytext,MAXTOKENLEN);
 //    if(TraceScan){
 //        fprintf(listing,"%19d: ",lineno);
 //        printToken(currentToken,tokenString);

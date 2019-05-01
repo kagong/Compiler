@@ -7,7 +7,7 @@
 #include <string.h>
 
 #ifndef YYPARSER
-    #include "parse.h"
+    #include "cm.tab.h"
     #define ENDFILE 0
 #endif
 
@@ -34,30 +34,36 @@ extern int lineno; /* source line number for listing */
 /*********** Syntax tree for parsing ***********/
 /*************************************************/
 
-typedef enum {StmtK,ExpK} NodeKind;
-typedef enum {IfK,RepeatK,AssignK, ReadK, WriteK} StmtKind;
+typedef enum {DeclK,StmtK,ExpK} NodeKind;
+typedef enum {FunK,VarK,VarArrK,ParaK} DeclKind;
+typedef enum {CompndK,SelcK, IterK, RetK, CallK} StmtKind;
 typedef enum {OpK,ConstK, IdK} ExpKind;
 
 /* Exp양pe is used for type cheking */
-typedef enum {Void, Integer,Boolean} ExpType;
+typedef enum {Void, Integer, Array} Type;
 
-#define MAXCHILDREN 3
+#define MAXCHILDREN 4
 
 typedef struct treeNode{ 
     struct treeNode * child[MAXCHILDREN];
     struct treeNode * sibling;
     int lineno;
+    
     NodeKind nodekind;
     union { 
+        DeclKind decl;
         StmtKind stmt; 
         ExpKind exp;
     }kind;
-    union { 
+    union {
+        struct {
+            char *name;
+            int arr_size;
+        }decl;
         TokenType op;
         int val;
-        char *name; 
-    } attr;
-    ExpType type; /* for type checking of exps */
+    }attr;
+    Type type;
 } TreeNode;
 
 /*************************************************/
