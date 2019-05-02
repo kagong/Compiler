@@ -42,7 +42,7 @@ void printToken( TokenType token, const char* tokenString ){
         default:        token_name = "UNKNOWN"; break;
 
     }
-    fprintf(listing,"%s%s\n",token_name,tokenString);     
+    fprintf(listing,"%s %s\n",token_name,tokenString);     
 
 }
 
@@ -230,7 +230,7 @@ void printTree( TreeNode * tree ){
                     break;
                 case IdK:
                     fprintf(listing, "Id: %s\n",tree->attr.decl.name);
-                    if(tree->child[0] != NULL){
+                    if(tree->child[0] != NULL){//array
                         INDENT;
                         printSpaces();
                         UNINDENT;

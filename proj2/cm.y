@@ -5,6 +5,7 @@
 #include "scan.h"
 #include "parse.h"
 
+#define MAX_STACK 256
 #define YYSTYPE TreeNode *
 static char * savedName; /* for use in assignments */
 static int savedLineNo; /* ditto */
@@ -14,17 +15,15 @@ static Type savedType;
 int yyerror(char * message);
 static int yylex(void);
 
-static TokenType StackOp[256];
-static char* StackID[256];
-static Type StackType[256];
+static TokenType StackOp[MAX_STACK];
+static char* StackID[MAX_STACK];
+static Type StackType[MAX_STACK];
 static int top = -1,top_id = -1,top_type = -1;
 
 static int temp;
 
 static void push_op(TokenType);
 static int pop_op();
-static void push_ID(char*);
-static char* pop_ID();
 static void push_ID(char*);
 static char* pop_ID();
 static void push_type(Type);
@@ -36,10 +35,16 @@ static Type pop_type();
 }while(0)\
 %}
 %token ENDFILE ERROR
-%token IF
-%token ELSE INT VOID WHILE RETURN
+%token IF INT VOID ELSE WHILE RETURN
 %token ID NUM
-%token PLUS MINUS TIMES OVER GET GT LET LT EQ ASSIGN NEQ SEMI COMMA LPAREN RPAREN LCBRAKET RCBRAKET LSBRAKET RSBRAKET
+%token PLUS MINUS TIMES OVER 
+%token GET GT LET LT EQ NEQ 
+%token ASSIGN
+%token SEMI COMMA 
+%token LPAREN RPAREN LCBRAKET RCBRAKET LSBRAKET RSBRAKET
+
+%nonassoc RPAREN
+%nonassoc ELSE
 
 %start program
 %%
@@ -331,6 +336,8 @@ empty                   :                                   {$$ = NULL;}
                         ;
 %%
 static void push_op(TokenType op){
+    if(top >= MAX_STACK)
+        return;
     StackOp[++top] = op;
 }
 static TokenType pop_op(){
@@ -339,6 +346,8 @@ static TokenType pop_op(){
     return -1;
 }
 static void push_ID(char* id){
+    if(top_id >= MAX_STACK)
+        return;
     StackID[++top_id] = id;
 }
 static char* pop_ID(){
@@ -347,6 +356,8 @@ static char* pop_ID(){
     return NULL;
 }
 static void push_type(Type t){
+    if(top_type >= MAX_STACK)
+        return;
     StackType[++top_type] = t;
 }
 static Type pop_type(){
