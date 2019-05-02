@@ -3,6 +3,7 @@
 
 void printToken(TokenType, const char*);
 
+TreeNode * newDeclNode(DeclKind);
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
  */

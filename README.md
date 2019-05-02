@@ -2,12 +2,13 @@ Sogang University 2019 spring Complier project
 
 name : Yun Je Hyeong (20151575)
 
-
 Projects:
 
 project#1 
     C- lexical analyzer
 
+project#2 
+    C- LALR(1) parser
 
 Date:
 

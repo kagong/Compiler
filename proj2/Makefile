@@ -1,7 +1,8 @@
 CC = gcc
-OBJS = main.o util.o scan.o
+OBJS = main.o util.o scan.o cm.tab.o
 TARGET = 20151575
  
+
 .SUFFIXES : .c .o
 	 
 all : $(TARGET)
@@ -9,13 +10,19 @@ all : $(TARGET)
 clean :
 	rm -f $(OBJS) $(TARGET)
 	rm -f scan.c
+	rm -f cm.tab.*
+	rm -f cm.output
 
-scan.c: cm.l
-	flex -o scan.c cm.l
 
-$(TARGET): $(OBJS)
+$(TARGET): parser scaner $(OBJS)
 	$(CC) -o $@ $(OBJS)
 
-main.o: globals.h util.h scan.h
+scaner: cm.l
+	flex -o scan.c cm.l
+parser: cm.y
+	bison -dv cm.y
+
+main.o: globals.h util.h scan.h parse.h
 util.o: util.h globals.h util.c
-scan.o: globals.h util.h scan.h cm.l
+scan.o: globals.h util.h scan.h parse.h scan.c
+cm.tab.o: globals.h util.h parse.h scan.h cm.tab.h cm.tab.c 

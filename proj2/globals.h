@@ -6,28 +6,23 @@
 #include <ctype.h>
 #include <string.h>
 
+#ifndef YYPARSER
+    #include "cm.tab.h"
+    #define ENDFILE 0
+#endif
+
 #ifndef FALSE
-#define FALSE 0
+    #define FALSE 0
 #endif
 
 #ifndef TRUE
-#define TRUE 1
+    #define TRUE 1
 #endif
 
-/* MAXRESERVED = the number of reserved words */
+ /* MAXRESERVED = the number of reserved words */
 #define MAXRESERVED 8
 
-typedef enum{
-    /* book-keeping tokens */
-    ENDFILE,ERROR,
-    /* reserved words */
-    IF,ELSE,INT,VOID,WHILE,RETURN,
-    /* multicharacter tokens */
-    ID,NUM,
-    /* special symbols */
-     PLUS, MINUS, TIMES, OVER, GET, GT, LET, LT, EQ, ASSIGN, NEQ, SEMI,COMMA, 
-     LPAREN, RPAREN, LCBRAKET, RCBRAKET, LSBRAKET, RSBRAKET
-} TokenType;
+typedef int TokenType;
 
 extern FILE* source; /* source code text file */
 extern FILE* listing; /* listing output text file */
@@ -39,30 +34,36 @@ extern int lineno; /* source line number for listing */
 /*********** Syntax tree for parsing ***********/
 /*************************************************/
 
-typedef enum {StmtK,ExpK} NodeKind;
-typedef enum {IfK,RepeatK,AssignK, ReadK, WriteK} StmtKind;
+typedef enum {DeclK,StmtK,ExpK} NodeKind;
+typedef enum {FunK,VarK,VarArrK,ParaK} DeclKind;
+typedef enum {CompndK,SelcK, IterK, RetK, CallK} StmtKind;
 typedef enum {OpK,ConstK, IdK} ExpKind;
 
 /* Exp양pe is used for type cheking */
-typedef enum {Void, Integer,Boolean} ExpType;
+typedef enum {Void, Integer, Array} Type;
 
-#define MAXCHILDREN 3
+#define MAXCHILDREN 4
 
 typedef struct treeNode{ 
     struct treeNode * child[MAXCHILDREN];
     struct treeNode * sibling;
     int lineno;
+    
     NodeKind nodekind;
     union { 
+        DeclKind decl;
         StmtKind stmt; 
         ExpKind exp;
     }kind;
-    union { 
+    union {
+        struct {
+            char *name;
+            int arr_size;
+        }decl;
         TokenType op;
         int val;
-        char *name; 
-    } attr;
-    ExpType type; /* for type checking of exps */
+    }attr;
+    Type type;
 } TreeNode;
 
 /*************************************************/
