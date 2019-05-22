@@ -2,7 +2,7 @@
 
 #define NO_PARSE FALSE
 
-#define NO_ANALYZE TRUE
+#define NO_ANALYZE FALSE
 
 #define NO_CODE TRUE
 
