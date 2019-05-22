@@ -10,49 +10,12 @@
    in hash function */
 #define SHIFT 4
 
-/* the hash function */
-static int hash ( char * key ){
-    int temp = 0;
-    int i = 0;
-    while (key[i] != '\0' )
-    { temp = ((temp <<SHIFT) + key[i]) % SIZE;
-        ++i;
-    }
-    return temp;
-}
-
-
-/* the list of line numbers of the source
- * code in which a variable is referenced
- */
-typedef struct LineListRec{ 
-    int lineno;
-    struct LineListRec * next;
-}*LineList;
-
-/* The record in the bucket lists for
- * each variable, including name,
- * assigned ? location, and
- * the list of line numbers in which
- * it appears in the source code
- */
-
-typedef struct BucketListRec{ 
-    char * name;
-    LineList lines;
-    int malloc /* ? location for variable */
-        struct BucketListRec * next;
-} * BucketList;
-
-/* the hash table */
-static BucketList hashTable[SIZE];
-
-/* procedure st_insert inserts line numbers 라ld
+/* procedure st_insert inserts line numbers and
  * memory locations into the symbol table
  * loc = memory location is inserted only the
  * first time, otherwise ignored
  */
-void st_insert ( char * name, int lineno,. int loc )
+void st_insert ( char * name, int lineno, int loc )
 {
     int h = hash(name);
     BucketList l = hashTable[h] ;
@@ -78,7 +41,7 @@ void st_insert ( char * name, int lineno,. int loc )
 
     } 
 }
-int st_lookup ( char * n없le ){
+int st_lookup ( char * name ){
     int h = hash(name);
     BucketList l = hashTable[h];
     while ((l != NULL) && (strcmp(name, l->name) != 0))
