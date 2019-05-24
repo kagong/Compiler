@@ -76,8 +76,7 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                                 $$ -> lineno = savedLineNo;
                                 $$ -> type = pop_type();
                             }
-                        |   type-specifier ID { SAVEID; } LSBRAKET NUM {temp =
-                        atoi(tokenString);} RSBRAKET SEMI         
+                        |   type-specifier ID { SAVEID; } LSBRAKET NUM {temp = atoi(tokenString);} RSBRAKET SEMI         
                             {
                                 $$ = newDeclNode(VarArrK);
                                 $$ -> attr.decl.name = pop_ID();
@@ -89,7 +88,7 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                         ;
 
 type-specifier          :   INT         {push_type(Integer);}
-                        |   VOID        {pop_type(Void);}
+                        |   VOID        {push_type(Void);}
                         ;
 
 fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN compound-stmt
@@ -107,7 +106,6 @@ params                  :   param-list                      {$$ = $1;}
                         |   VOID                            
                             {
                                 $$ = newDeclNode(ParaK);
-                                
                                 $$ -> type = Void;
                             }
                         ;
@@ -246,6 +244,7 @@ var                     :   ID
                                 $$ = newExpNode(IdK);
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> child[0] = $4;
+                                $$ -> type = Array;
                             }
                         ;
 
@@ -313,7 +312,7 @@ call                    :   ID {SAVEID;} LPAREN args RPAREN
                                 $$ -> child[0] = $4;
                             }
                         ;
-
+//look up이 필요함 함수의 반환값 필요.
 args                    :   arg-list                        {$$ = $1;}
                         |   empty                           {$$ = $1;}
                         ;
