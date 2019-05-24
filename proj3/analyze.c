@@ -22,16 +22,7 @@ static void insertNode( TreeNode * t){
         case DeclK:
             switch (t->kind.decl){
                 case FunK:
-                    if(strcmp(t->attr.decl.name, "main")){
-                        //11,12,13
-                        if(t->type != Void)
-                            typeError(t->lineno,"main function should return void");
-                        if(t->child[0]->type != Void)
-                            typeError(t->lineno,"main function should not have any parameters");
-                        if(t->sibling)
-                            typeError(t->lineno,"main function should be located at last");
-                    }
-                    break;
+                                        break;
                 case VarK:
                     //3
                     if(t->type == Void)
@@ -101,20 +92,8 @@ static void checkNode( TreeNode * t){
         case DeclK:
             switch (t->kind.decl){
                 case FunK:
-                    if(strcmp(t->attr.decl.name, "main")){
-                        //11,12,13
-                        if(t->type != Void)
-                            typeError(t->lineno,"main function should return void");
-                        if(t->child[0]->type != Void)
-                            typeError(t->lineno,"main function should not have any parameters");
-                        if(t->sibling)
-                            typeError(t->lineno,"main function should be located at last");
-                    }
                     break;
                 case VarK:
-                    //3
-                    if(t->type == Void)
-                        typeError(t->lineno,"variable type should not be void");
                     break;
                 case VarArrK:
                 case ParaK:
@@ -125,13 +104,6 @@ static void checkNode( TreeNode * t){
             switch (t->kind.stmt){ 
                 case CompndK:
                 case SelcK:
-                    /*
-                       if (st_lookup(t->attr.name) == -1)
-                       st_insert(t->attr.name, t->lineno, location++) ;
-                       else
-                       st_insert(t->attr.name, t->lineno, 0);
-                       */
-                    break;
                 case IterK:
                 case RetK:
                 case CallK:
@@ -142,10 +114,6 @@ static void checkNode( TreeNode * t){
         case ExpK:
             switch (t->kind.exp){
                 case IdK:
-                    if (st_lookup(t->attr.name) == -1)
-                        st_insert(t->attr.name, t->lineno,location++);
-                    else
-                        st_insert(t->attr.name, t->lineno, O);
                     break;
                 case ConstK:
                 case OpK:

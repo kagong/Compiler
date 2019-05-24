@@ -59,6 +59,7 @@ TreeNode * newDeclNode(DeclKind kind){
         t->kind.decl = kind;
         t->lineno = lineno;
         t->attr.decl.arr_size = 0;
+        t->type = Notype;
     }
     return t;
 }
@@ -74,6 +75,7 @@ TreeNode * newStmtNode(StmtKind kind){
         t->nodekind = StmtK;
         t->kind.stmt = kind;
         t->lineno = lineno;
+        t->type = Notype;
     }
     return t;
 }
@@ -92,7 +94,7 @@ TreeNode * newExpNode(ExpKind kind){
         t->nodekind = ExpK;
         t->kind.exp = kind;
         t->lineno = lineno;
-        t->type = Void;
+        t->type = Notype;
 
     }
     return t;
