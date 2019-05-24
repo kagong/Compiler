@@ -6,7 +6,7 @@
 /* SIZE is the size of the hash table */
 #define SIZE 211
 
-/* sHIFT is the power of two used as multiplier
+/* SHIFT is the power of two used as multiplier
    in hash function */
 #define SHIFT 4
 

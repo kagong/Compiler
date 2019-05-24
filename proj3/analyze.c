@@ -3,7 +3,7 @@
 #include "analyze.h"
 
 static int location = 0;
-static void traverse( TreeNode * t ,void(* prePorc) (TreeNode *),void (* postProc) (TreeNode *)){
+static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postProc) (TreeNode *)){
     if (t != NULL){ 
         preProc(t);
         int i; 
@@ -20,7 +20,7 @@ static void nullProc(TreeNode * t){
 static void insertNode( TreeNode * t){
     switch (t->nodekind){ 
         case StmtK:
-            switch (t->kind.s다nt){ 
+            switch (t->kind.stmt){ 
                 case AssignK:
                 case ReadK:
                     if (st_lookup(t->attr.name) == -1)
@@ -70,9 +70,9 @@ static void checkNode(TreeNode * t){
         case ExpK:
             switch (t->kind.exp){ 
                 case OpK:
-                    if ((t->chi1d[0]->type != Integer) ||(t->chi1d[1] ->type != Integer))
+                    if ((t->child[0]->type != Integer) ||(t->child[1] ->type != Integer))
                         typeError(t,"Op applied to non-integer");
-                    if ((t->attr.op == EQ) 11 (t->attr.op == LT))
+                    if ((t->attr.op == EQ) || (t->attr.op == LT))
                         t->type = Boolean;
                     else
                         t->type = Integer;
@@ -89,19 +89,19 @@ static void checkNode(TreeNode * t){
             switch (t->kind.stmt){ 
                 case IfK:
                     if (t->child[0]->type == Integer)
-                        typeError(t->chi1d[0], "iif test is not Bolean") ;
+                        typeError(t->child[0], "iif test is not Bolean") ;
                     break;
                 case AssignK:
                     if (t->child[0]->type != Integer)
-                        typeError (t->chi1d[0] ,"assignment of non-integer value");
+                        typeError (t->child[0] ,"assignment of non-integer value");
                     break;
                 case WriteK:
                     if (t->child[0]->type != Integer)
-                        typeError (t->chi1d [0] , "write of non-integer value");
+                        typeError (t->child [0] , "write of non-integer value");
                     break;
                 case RepeatK:
                     if (t->child[1]->type == Integer)
-                        typeError(t->chi1d[1] , "repeat test not Boolean");
+                        typeError(t->child[1] , "repeat test not Boolean");
                     break;
                 default:
                     break;
