@@ -17,7 +17,10 @@
  */
 void st_insert ( char * name, int lineno, int loc )
 {
+    ScopeList temp = total_sym; 
     int h = hash(name);
+
+//
     BucketList l = hashTable[h] ;
     while ((l != NULL) && (strcmp(name, l->name) != 0) )
         l = l->next;
