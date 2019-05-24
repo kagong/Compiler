@@ -82,7 +82,8 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> lineno = savedLineNo;
                                 $$ -> type = Array;
-                                pop_type();        //be overwrited by Array
+                                if (pop_type() == Void)
+                                    $$ -> type = Error;
                                 $$ -> attr.decl.arr_size = temp;
                             }
                         ;
