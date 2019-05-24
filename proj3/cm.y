@@ -89,7 +89,7 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                         ;
 
 type-specifier          :   INT         {push_type(Integer);}
-                        |   VOID        {pop_type(Void);}
+                        |   VOID        {push_type(Void);}
                         ;
 
 fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN compound-stmt
