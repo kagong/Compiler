@@ -1,10 +1,5 @@
 #ifndef _SYMTAB_H_
 #define _SYMTAB_H_
-/* procedure st_insert inserts 1ine numbers and
-* IlIi태~ry 10cations into the symbo1 tab1e
-* 10c = memory 10cation is inserted on1y the
-* first time, otherwise ignored
-*/
 
 /* the hash function */
 static int hash ( char * key ){
@@ -24,7 +19,7 @@ static int hash ( char * key ){
 typedef struct LineListRec{
     int lineno;
     struct LineListRec * next;
-}*LineList;
+} * LineList;
 
 /* The record in the bucket lists for
  * each variable, including name,
@@ -40,17 +35,20 @@ typedef struct BucketListRec{
     struct BucketListRec * next;
 } * BucketList;
 
-/* the hash table */
-static BucketList hashTable[SIZE];
+/* The hash table for each scope */
+typedef struct ScopeListRec{
+	BucketList hashTable[SIZE];
+	int level;
+	struct ScopeListRec * next;
+} * ScopeList;
 
-void st_insert(char* name, int lineno, int loc );
-/* Function st 1001ζup returns the mem야Y
-* 10cation of a variab1e or -1 ifnot found
-*/
+static ScopeList total_sym;
+
+void st_insert(char* name, int lineno, int loc, int type );
 int st_lookup (char* name);
 /* procedure printSymTab prints a formatted
-* 1isting of the symbo1 tab1e contents
-* to the 1isting fi1e
+* listing of the symbol table contents
+* to the listing file
 */
 void printSymTab(FILE * listing);
 #endif

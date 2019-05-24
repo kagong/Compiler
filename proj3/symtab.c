@@ -6,7 +6,7 @@
 /* SIZE is the size of the hash table */
 #define SIZE 211
 
-/* sHIFT is the power of two used as multiplier
+/* SHIFT is the power of two used as multiplier
    in hash function */
 #define SHIFT 4
 
@@ -17,7 +17,10 @@
  */
 void st_insert ( char * name, int lineno, int loc )
 {
+    ScopeList temp = total_sym; 
     int h = hash(name);
+
+//
     BucketList l = hashTable[h] ;
     while ((l != NULL) && (strcmp(name, l->name) != 0) )
         l = l->next;

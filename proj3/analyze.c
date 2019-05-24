@@ -3,7 +3,7 @@
 #include "analyze.h"
 
 static int location = 0;
-static void traverse( TreeNode * t ,void(* prePorc) (TreeNode *),void (* postProc) (TreeNode *)){
+static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postProc) (TreeNode *)){
     if (t != NULL){ 
         preProc(t);
         int i; 
@@ -19,29 +19,61 @@ static void nullProc(TreeNode * t){
 }
 static void insertNode( TreeNode * t){
     switch (t->nodekind){ 
-        case StmtK:
-            switch (t->kind.s다nt){ 
-                case AssignK:
-                case ReadK:
-                    if (st_lookup(t->attr.name) == -1)
+        case DeclK:
+	    switch (t->kind.decl){
+		case FunK:
+			if(strcmp(t->attr.decl.name, "main")){
+				//11,12,13
+				if(t->type != Void)
+					typeError(t->lineno,"main function should return void");
+				if(t->child[0]->type != Void)
+					typeError(t->lineno,"main function should not have any parameters");
+				if(t->sibling)
+					typeError(t->lineno,"main function should be located at last");
+			}
+			break;
+		case VarK:
+			//3
+			if(t->type == Void)
+				typeError(t->lineno,"variable type should not be void");
+			break;
+		case VarArrK:
+			if()
+		case ParaK:
+		default:
+	    }
+	    break;
+	case StmtK:
+            switch (t->kind.stmt){ 
+                case CompndK:
+                case SelcK:
+                    /*
+		    if (st_lookup(t->attr.name) == -1)
                         st_insert(t->attr.name, t->lineno, location++) ;
                     else
                         st_insert(t->attr.name, t->lineno, 0);
-                    break;
+                    */
+		    break;
+		case IterK:
+		case RetK:
+		case CallK:
                 default:
                     break;
             }
             break;
         case ExpK:
-            switch (t->kind.exp)
-            { case IdK:
-                if (st_lookup(t->attr.name) == -1)
-                    st_insert(t->attr.name, t->lineno,location++);
-                else
-                    st_insert(t->attr.name, t->lineno, O);
-                break;
-                default;
-                break;
+            switch (t->kind.exp){
+		case IdK:
+                	if (st_lookup(t->attr.name) == -1)
+                    		st_insert(t->attr.name, t->lineno,location++);
+                	else
+                    		st_insert(t->attr.name, t->lineno, O);
+                	break;
+                case ConstK:
+		case OpK:
+		
+		default:
+                	break;
             }
             break;
         default:
@@ -61,8 +93,8 @@ void buildSymtab(TreeNode * syntaxTree){
 
 
 
-static void typeError(TreeNode * t , char * message){
-    fprintf (listing, "Type error at line %d: %s\n" , t->lineno,message);
+static void typeError(int lineno , char * message){
+    fprintf (listing, "Error in line %d: %s\n" , lineno, message);
     Error = TRUE;
 }
 static void checkNode(TreeNode * t){ 
@@ -70,9 +102,9 @@ static void checkNode(TreeNode * t){
         case ExpK:
             switch (t->kind.exp){ 
                 case OpK:
-                    if ((t->chi1d[0]->type != Integer) ||(t->chi1d[1] ->type != Integer))
+                    if ((t->child[0]->type != Integer) ||(t->child[1] ->type != Integer))
                         typeError(t,"Op applied to non-integer");
-                    if ((t->attr.op == EQ) 11 (t->attr.op == LT))
+                    if ((t->attr.op == EQ) || (t->attr.op == LT))
                         t->type = Boolean;
                     else
                         t->type = Integer;
@@ -89,19 +121,19 @@ static void checkNode(TreeNode * t){
             switch (t->kind.stmt){ 
                 case IfK:
                     if (t->child[0]->type == Integer)
-                        typeError(t->chi1d[0], "iif test is not Bolean") ;
+                        typeError(t->child[0], "iif test is not Bolean") ;
                     break;
                 case AssignK:
                     if (t->child[0]->type != Integer)
-                        typeError (t->chi1d[0] ,"assignment of non-integer value");
+                        typeError (t->child[0] ,"assignment of non-integer value");
                     break;
                 case WriteK:
                     if (t->child[0]->type != Integer)
-                        typeError (t->chi1d [0] , "write of non-integer value");
+                        typeError (t->child [0] , "write of non-integer value");
                     break;
                 case RepeatK:
                     if (t->child[1]->type == Integer)
-                        typeError(t->chi1d[1] , "repeat test not Boolean");
+                        typeError(t->child[1] , "repeat test not Boolean");
                     break;
                 default:
                     break;
