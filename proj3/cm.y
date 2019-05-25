@@ -303,6 +303,7 @@ factor                  :   LPAREN expression RPAREN        {$$ = $2;}
                             {
                                 $$ = newExpNode(ConstK);
                                 $$->attr.val = atoi(tokenString);
+                                $$ -> type = Integer;
                             }
                         ;
 
