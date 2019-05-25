@@ -7,6 +7,9 @@ static void checkNode( TreeNode * t){
                 case VarK:
                     break;
                 case VarArrK:
+                    if(t->type == Error)
+                        ;//error
+
                 case ParaK:
                 default:
             }
@@ -14,6 +17,7 @@ static void checkNode( TreeNode * t){
         case StmtK:
             switch (t->kind.stmt){ 
                 case CompndK:
+                    //scope up
                 case SelcK:
                 case IterK:
                 case RetK:
@@ -25,6 +29,10 @@ static void checkNode( TreeNode * t){
         case ExpK:
             switch (t->kind.exp){
                 case IdK:
+                    if(t->op == ASSIGN);
+                        //todo'
+                    else{
+                    }
                     break;
                 case ConstK:
                 case OpK:
