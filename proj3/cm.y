@@ -79,11 +79,9 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                         |   type-specifier ID { SAVEID; } LSBRAKET NUM {temp = atoi(tokenString);} RSBRAKET SEMI         
                             {
                                 $$ = newDeclNode(VarArrK);
-                                $$ -> attr.decl.name = pop_ID();
+                                $$ -> attr.decl.name =Integer_ID();
                                 $$ -> lineno = savedLineNo;
-                                $$ -> type = Array;
-                                if (pop_type() == Void)
-                                    $$ -> type = Error;
+                                $$ -> type = pop_type();
                                 $$ -> attr.decl.arr_size = temp;
                             }
                         ;
@@ -104,11 +102,7 @@ fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN com
                         ;
 
 params                  :   param-list                      {$$ = $1;}
-                        |   VOID                            
-                            {
-                                $$ = newDeclNode(ParaK);
-                                $$ -> type = Void;
-                            }
+                        |   VOID                            {$$ = NULL;}
                         ;
 
 param-list              :   param-list COMMA param          
@@ -137,7 +131,8 @@ param                   :   type-specifier ID
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> lineno = savedLineNo;
                                 $$ -> type = Array;
-                                pop_type();
+                                if(pop_type() == Void)
+                                    $$ -> type = Error;
                                 $$ -> attr.decl.arr_size = 0;
                             }
                         ;

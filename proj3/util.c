@@ -190,9 +190,9 @@ void printTree( TreeNode * tree ){
                     break;
                 case ParaK:
                     switch(tree->type){
-                        case Void:    
-                            fprintf(listing,"Parameter: %s\n","VOID");
-                            break;
+//                        case Void:    
+//                            fprintf(listing,"Parameter: %s\n","VOID");
+   //                         break;
                         default:
                             fprintf(listing,"Parameter: %s\n",tree->attr.decl.name );
                             printType(tree);
