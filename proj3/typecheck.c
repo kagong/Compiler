@@ -45,12 +45,14 @@ static void checkNode( TreeNode * t){
                 case IdK:
                     if(t->child[0] != NULL)//nocheck array라는 타입을 만드는게 좋을듯?
                     {
-                        if(t->child[0]->type != Integer)
+                        //lookup : is this arr?
+                        if(t->child[0]->type != Integer && t->child[0]->type != Array)
                             ;//error
+                    t->type = Array;
                     }
-                    //array를 integer로 변경? nocheck array에서 integer로
-                    //변경시키고 isarray라는 변수 만드는게 좋ㅎ을듯
-                    t->type = Integer;
+                    else{
+                        t -> type = Integer;
+                    }
                     break;
                 case ConstK:
                     break;

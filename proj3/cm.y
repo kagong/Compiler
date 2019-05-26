@@ -245,7 +245,7 @@ var                     :   ID
                                 $$ = newExpNode(IdK);
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> child[0] = $4;
-                                $$ -> type = Array;
+                                $$ -> type = Array_Nocheck;
                             }
                         ;
 

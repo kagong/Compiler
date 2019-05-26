@@ -40,7 +40,7 @@ typedef enum {CompndK,SelcK, IterK, RetK, CallK} StmtKind;
 typedef enum {OpK,ConstK, IdK} ExpKind;
 
 /* Exp양pe is used for type cheking */
-typedef enum {Notype, Void, Integer, Array, Error} Type;
+typedef enum {Notype, Void, Integer, Array, Array_Nocheck, Error} Type;
 
 #define MAXCHILDREN 4
 

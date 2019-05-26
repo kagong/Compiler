@@ -146,6 +146,7 @@ void printType(TreeNode * tree){
         case Void://error
             fprintf(listing,"Type: Void\n");
             break;
+        case Array_Nocheck:
         case Array:
             fprintf(listing,"Type: array %d \n",tree->attr.decl.arr_size);
             break;
