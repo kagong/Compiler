@@ -53,8 +53,8 @@ ScopeList total_sym ;
 ScopeList global_sym;
 
 void insert_scope(int scope);
-void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal);
-int st_lookup (char* name);
+void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal,int isdec);
+int st_lookup (char* name,int );
 /* procedure printSymTab prints a formatted
 * listing of the symbol table contents
 * to the listing file

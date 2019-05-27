@@ -19,22 +19,29 @@ void insert_scope(int scope){
 		tmp->next = total_sym;
 		total_sym = tmp;
 }
-void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal)
+void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal,int isdec)
 {
-		ScopeList temp;
-		if(isglobal == TRUE) temp = global_sym;
-		else temp = total_sym; 
+		ScopeList temp,sym;
+		if(isglobal == TRUE) sym = global_sym;
+		else sym = total_sym; 
+		temp = sym;
 		int h = hash(name);
 		BucketList l;
+		if(isdec){
+			l = (temp->bucket)[h];
+			while((l != NULL) && (strcmp(name, l->name) != 0)) l = l->next;
+		}else{
 		while(temp!=NULL){
-				if (temp->valid != TRUE)
+				if(temp->valid != TRUE){
+					temp = temp->next;
 					continue;
+				}
 				l = (temp->bucket)[h];
 				while ((l != NULL) && (strcmp(name, l->name) != 0) )
 						l = l->next;
 				if(l != NULL) break;
 				temp = temp ->next;
-		}
+		}}
 		if (l == NULL){//new node
 				l = (BucketList) malloc(sizeof(struct BucketListRec));
 				l->name = name;
@@ -46,8 +53,8 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
 				l->isarr = isarr;
 				l->arrsize = arrsize;
 				l->type = type;
-				l->next = (total_sym->bucket)[h] ;
-				(total_sym->bucket)[h] = l; 
+				l->next = (sym->bucket)[h] ;
+				(sym->bucket)[h] = l; 
 		}
 		else{//only insert lineno
 				LineList t = l->lines;
@@ -59,19 +66,29 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
 		}
 
 }
-int st_lookup ( char * name ){
+int st_lookup ( char * name, int isdec ){
 		int h = hash(name);
 		ScopeList tmp = total_sym;
 		BucketList l; 
-		while(tmp != NULL){
-				if(tmp->valid != TRUE)
-					continue;
-				l = (tmp->bucket)[h];
-				while ((l != NULL) && (strcmp(name, l->name) != 0))
-						l = l->next;
-				if(l != NULL)
-						break;
-			tmp = tmp ->next;
+		if(isdec){
+			l = (tmp->bucket)[h];
+			while((l != NULL) && (strcmp(name, l->name) != 0)) l = l->next;
+			return l == NULL ? -1 : 1;
+		}
+		else{
+			while(tmp != NULL){
+					if(tmp->valid != TRUE){
+						tmp = tmp->next;
+						continue;
+					}
+					l = (tmp->bucket)[h];
+					while ((l != NULL) && (strcmp(name, l->name) != 0)){
+							l = l->next; 
+					}
+					if(l != NULL)
+							break;
+				tmp = tmp ->next;
+			}
 		}
 		if (tmp == NULL) return -1;
 		else return l->memloc;
@@ -80,12 +97,13 @@ int st_lookup ( char * name ){
 //get_treenode()
 void printSymTab(FILE * listing){
 		int i;
-		fprintf(listing, "Name\tScope\tLoc\tV/P/F\tArray?\tArrSize\tType\tLine Numbers\n") ;
-		fprintf(listing, "----------------------------------------------------------------------\n") ;
 		ScopeList tmp = total_sym;
 		int sc;
 		while(tmp!=NULL){
 				sc = tmp->level;
+				fprintf(listing, "\n\nName\tScope\tLoc\tV/P/F\tArray?\tArrSize\tType\tLine Numbers\n") ;
+				fprintf(listing, "----------------------------------------------------------------------\n") ;
+
 				for (i=0;i<SIZE;++i){ 
 						if (tmp->bucket[i] !=NULL){ 
 								BucketList l = tmp->bucket[i];
@@ -98,7 +116,7 @@ void printSymTab(FILE * listing){
 										fprintf(listing,"%-8s ",(l->isarr) ? "Array" : "No");
 										if(l->isarr) fprintf(listing,"%-6d ",l->arrsize);
 										else fprintf(listing,"%-6s ","-");
-										fprintf(listing,"%-5s ",type_string[l->type]);
+										fprintf(listing,"%-5s ",(l->isarr) ? "array" : type_string[l->type]);
 										
 										while (t != NULL){ 
 												fprintf(listing, "%4d ", t->lineno);

@@ -18,10 +18,13 @@ static int yylex(void);
 static TokenType StackOp[MAX_STACK];
 static char* StackID[MAX_STACK];
 static Type StackType[MAX_STACK];
-static int top = -1,top_id = -1,top_type = -1;
+static int StackLine[MAX_STACK];
+static int top = -1,top_id = -1,top_type = -1,top_line=-1;
 
 static int temp;
 
+static void push_line(int);
+static int pop_line();
 static void push_op(TokenType);
 static int pop_op();
 static void push_ID(char*);
@@ -30,9 +33,8 @@ static void push_type(Type);
 static Type pop_type();
 
 #define SAVEID do{\
-	int aaa=lineno;\
     push_ID(copyString(prev));\
-    savedLineNo = lineno;\
+    push_line(lineno);\
 }while(0)\
 %}
 %token ENDFILE ERROR
@@ -73,15 +75,15 @@ declaration             :   var-declaration                 {$$ = $1;}
 var-declaration         :   type-specifier ID { SAVEID; } SEMI              
                             {
                                 $$ = newDeclNode(VarK);
+                                $$ -> lineno = pop_line();
                                 $$ -> attr.decl.name = pop_ID();
-                                $$ -> lineno = savedLineNo;
                                 $$ -> type = pop_type();
                             }
                         |   type-specifier ID { SAVEID; } LSBRAKET NUM {temp = atoi(tokenString);} RSBRAKET SEMI         
                             {
                                 $$ = newDeclNode(VarArrK);
+                                $$ -> lineno = pop_line();
                                 $$ -> attr.decl.name =pop_ID();
-                                $$ -> lineno = savedLineNo;
                                 $$ -> type = pop_type();
                                 $$ -> attr.decl.arr_size = temp;
                             }
@@ -91,10 +93,10 @@ type-specifier          :   INT         {push_type(Integer);}
                         |   VOID        {push_type(Void);}
                         ;
 
-fun-declaration         :   type-specifier ID {
-SAVEID;} LPAREN params RPAREN compound-stmt
+fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN compound-stmt
                             {
                                 $$ = newDeclNode(FunK);
+                                $$ -> lineno = pop_line();
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> type = pop_type();
                                 $$ -> child[0] = $5;
@@ -123,7 +125,7 @@ param                   :   type-specifier ID
                                 SAVEID;
                                 $$ = newDeclNode(ParaK);
                                 $$ -> attr.decl.name = pop_ID();
-                                $$ -> lineno = savedLineNo;
+                                $$ -> lineno = lineno;
                                 $$ -> type = pop_type();
 
                             }
@@ -131,7 +133,7 @@ param                   :   type-specifier ID
                             {
                                 $$ = newDeclNode(ParaK);
                                 $$ -> attr.decl.name = pop_ID();
-                                $$ -> lineno = savedLineNo;
+                                $$ -> lineno = pop_line();
                                 $$ -> type = Array;
                                 if(pop_type() == Void)
                                     $$ -> type = Err;
@@ -235,11 +237,13 @@ var                     :   ID
                             {
                                 SAVEID;
                                 $$ = newExpNode(IdK);
+                                $$ -> lineno = pop_line();
                                 $$ -> attr.decl.name = pop_ID();
                             }
                         |   ID { SAVEID; } LSBRAKET expression RSBRAKET  
                             {
                                 $$ = newExpNode(IdK);
+                                $$ -> lineno = pop_line();
                                 $$ -> attr.decl.name = pop_ID();
                                 $$ -> child[0] = $4;
                                 $$ -> type = Array_Nocheck;
@@ -308,6 +312,7 @@ call                    :   ID {SAVEID;} LPAREN args RPAREN
                             {
                                 $$ = newStmtNode(CallK);
                                 $$ -> attr.decl.name = pop_ID();
+                                $$ -> lineno = pop_line();
                                 $$ -> child[0] = $4;
                             }
                         ;
@@ -333,6 +338,16 @@ arg-list                :   arg-list COMMA expression
 empty                   :                                   {$$ = NULL;}
                         ;
 %%
+static void push_line(int line){
+    if(top_line >= MAX_STACK)
+        return;
+    StackLine[++top_line] = line;
+}
+static int pop_line(){
+    if(top_line >= 0)
+        return StackLine[top_line--];
+    return -1;
+}
 static void push_op(TokenType op){
     if(top >= MAX_STACK)
         return;
