@@ -15,33 +15,39 @@
  * loc = memory location is inserted only the
  * first time, otherwise ignored
  */
-void st_insert ( char * name, int lineno, int loc )
+void insert_scope(){
+	ScopeList tmp = (ScopeList)malloc(sizeof(struct ScopeListRec));
+	for(int i=0;i<SIZE;i++) tmp->bucket[i]=NULL;
+	tmp->level = scope;
+	tmp->next = total_sym;
+	total_sym = tmp;
+}
+void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,type_rec type )
 {
     ScopeList temp = total_sym; 
     int h = hash(name);
 
-//
-    BucketList l = hashTable[h] ;
+    BucketList l = (temp->bucket)[h];
+
     while ((l != NULL) && (strcmp(name, l->name) != 0) )
         l = l->next;
-    if (l == NULL){
+    if (l == NULL){//new node
         l = (BucketList) malloc(sizeof(struct BucketListRec));
         l->name = name;
         l->lines = (LineList) malloc(sizeof(struct LineListRec));
         l->lines->lineno = lineno;
         l->memloc = loc;
         l->lines->next = NULL;
-        l->next = hashTable [h] ;
-        hashTable [h] = 1; 
+        l->next = bucket[h] ;
+        bucket[h] = l; 
     }
-    else{
+    else{//only insert lineno
         LineList t = l->lines;
         while (t->next != NULL) 
             t = t->next;
         t->next = (LineList) malloc(sizeof(struct LineListRec));
         t->next->lineno = lineno;
         t->next->next = NULL;
-
     } 
 }
 int st_lookup ( char * name ){

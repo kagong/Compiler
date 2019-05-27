@@ -12,6 +12,8 @@ static int hash ( char * key ){
     return temp;
 }
 
+typedef enum {Array,Int,Void} type_rec;
+typedef enum {Var, Func, Par} isvpf;
 
 /* the list of line numbers of the source
  * code in which a variable is referenced
@@ -31,19 +33,23 @@ typedef struct LineListRec{
 typedef struct BucketListRec{
     char * name;
     LineList lines;
-    int malloc /* memory location for variable */
-    struct BucketListRec * next;
+    int malloc; /* memory location for variable */
+	isvpf vpf;
+	int isarr;
+	int arrsize;
+	type_rec type;
+	struct BucketListRec * next;
 } * BucketList;
 
-/* The hash table for each scope */
 typedef struct ScopeListRec{
-	BucketList hashTable[SIZE];
 	int level;
-	struct ScopeListRec * next;
-} * ScopeList;
+	int valid;
+	BucketList bucket[SIZE];
+	struct ScopeListRect * next;
+} * ScopeList
 
-static ScopeList total_sym;
-
+static ScopeList total_sym = NULL;
+void insert_scope();
 void st_insert(char* name, int lineno, int loc, int type );
 int st_lookup (char* name);
 /* procedure printSymTab prints a formatted
