@@ -22,9 +22,11 @@ static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postPro
         int i; 
         for (i=0; i < MAXCHILDREN; i++)
             traverse(t->child[i],preProc,postProc);
-        if(((t->nodekind == StmtK) &&( (t->kind.stmt == CompndK)||(t->nodekind == FompndK)))){
-			//scope--;
+        if(((t->nodekind == StmtK) &&( (t->kind.stmt == CompndK)||(t->kind.stmt == FompndK)))){
 			total_sym->valid = FALSE;
+			ScopeList _sym = total_sym;
+			while(scope!=_sym->level) _sym = _sym->next;
+			_sym->valid = FALSE;
 		}
 		scope = _scope;
 		postProc(t);
@@ -121,7 +123,8 @@ static void insertNode( TreeNode * t){
 					insert_scope(scope);
 					break;//FompndK pass
                 case CallK:
-					st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,t->type,TRUE,FALSE);
+					if(st_lookup(t->attr.decl.name,FALSE)!=-1) st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,t->type,TRUE,FALSE);
+					else {/*error*/}
 					break;
                 default:
                     break;
@@ -131,15 +134,12 @@ static void insertNode( TreeNode * t){
             //printf("%s\n",t->attr.decl.name);
 			switch (t->kind.exp){
                 case IdK:
-                    if (st_lookup(t->attr.decl.name,FALSE) == -1)
-                    	return;//error
-					//else
-                        //if(t->child[0]!=NULL) st_insert(t->attr.name, t->lineno, location,Var,TRUE,t->attr.decl.arr_size,FALSE);
+                    if (st_lookup(t->attr.decl.name,FALSE) == -1){/*error*/}
+					else
+                        //array typechecking needed
+						//printf("%d %s %d\n",total_sym->next->valid,t->attr.decl.name,t->lineno);
+						st_insert(t->attr.decl.name, t->lineno, location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE);
                     break;
-                case ConstK:
-					break;
-                case OpK:
-					break;
                 default:
                     break;
             }

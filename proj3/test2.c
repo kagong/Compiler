@@ -36,6 +36,7 @@ void main(void){
 		else{
 			int two;
 			int tmp;
+
 			two = arr[2];
 			while(arr[one] == brr[tmp]){
 				int tmp;

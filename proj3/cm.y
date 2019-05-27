@@ -101,7 +101,7 @@ fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN com
                                 $$ -> type = pop_type();
                                 $$ -> child[0] = $5;
                                 $$ -> child[1] = $7;
-                                $$ -> child[1] -> kind.decl = FompndK;
+                                $$ -> child[1] -> kind.stmt = FompndK;
                             }
                         ;
 

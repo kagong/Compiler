@@ -32,7 +32,7 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
 			while((l != NULL) && (strcmp(name, l->name) != 0)) l = l->next;
 		}else{
 		while(temp!=NULL){
-				if(temp->valid != TRUE){
+				if(temp->valid == FALSE){
 					temp = temp->next;
 					continue;
 				}
@@ -60,9 +60,11 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
 				LineList t = l->lines;
 				while (t->next != NULL) 
 						t = t->next;
-				t->next = (LineList) malloc(sizeof(struct LineListRec));
-				t->next->lineno = lineno;
-				t->next->next = NULL;
+				if(t->lineno != lineno){
+					t->next = (LineList) malloc(sizeof(struct LineListRec));
+					t->next->lineno = lineno;
+					t->next->next = NULL;
+				}
 		}
 
 }
@@ -77,7 +79,7 @@ int st_lookup ( char * name, int isdec ){
 		}
 		else{
 			while(tmp != NULL){
-					if(tmp->valid != TRUE){
+					if(tmp->valid == FALSE){
 						tmp = tmp->next;
 						continue;
 					}
