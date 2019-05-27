@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = main.o util.o scan.o cm.tab.o analyze.o
+OBJS = main.o util.o scan.o cm.tab.o symtab.o analyze.o 
 TARGET = 20151575
  
 
@@ -27,3 +27,4 @@ util.o: util.h globals.h util.c
 scan.o: globals.h util.h scan.h parse.h scan.c
 cm.tab.o: globals.h util.h parse.h scan.h cm.tab.h cm.tab.c 
 analyze.o: analyze.h analyze.c
+symtab.o: symtab.h symtab.c

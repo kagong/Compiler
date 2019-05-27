@@ -1,19 +1,22 @@
-#include "globals.h"
-#include "symtab.h"
 #include "analyze.h"
-#define plus4(x) x += 4
-#define minus4(x) x -= 4
+#include "symtab.h"
+#include "globals.h"
+#define WORD 4
 static int location = 0;
-static int global_loc = 0;
+static int global_location = 0;
 static int func_loc = 0;
 static int scope = 0;
-static ScopeList global_sym;
 
 //int scope_flag = FALSE;
+extern ScopeList total_sym;
 
+static void typeError(int lineno , char * message){
+    fprintf (listing, "Error in line %d: %s\n" , lineno, message);
+    Error = TRUE;
+}
 //static char *fun_name;
 static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postProc) (TreeNode *)){
-    if (t != NULL){ 
+    if (t != NULL){
 		int _scope = scope;
         preProc(t);
         int i; 
@@ -40,10 +43,11 @@ static void insertNode( TreeNode * t){
                 case FunK:
 					if(st_lookup(t->attr.decl.name)==-1){
 						//insert fuction
-						st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,TRUE);
+						st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,t->type,TRUE);
 						location = 0;
 						scope++;
-						insert_scope();
+						if(t->child[0]==NULL) location = -4;
+						insert_scope(scope);
 					}
 					else{
 						//duplicate
@@ -53,15 +57,15 @@ static void insertNode( TreeNode * t){
 		    		if(st_lookup(t->attr.decl.name)==-1){
 						if(scope!=0) {
 							if(t->type == Integer){
-								minus4(location);
-								st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,FALSE);
+								location -= WORD;
+								st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,Integer,FALSE);
 							}
 							else typeError(t->lineno,"variable should be integer");
 						}
 						else{
 							if(t->type == Integer){
-								plus4(global_location);
-								st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,TRUE);
+								global_location += WORD;
+								st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,Integer,TRUE);
 							}
 							else typeError(t->lineno,"variable should be integer");
 						}
@@ -75,11 +79,11 @@ static void insertNode( TreeNode * t){
 						if(t->type == Array){
 							if(scope==0){
 								global_location += 4*(t->attr.decl.arr_size);
-								st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,TRUE);
+								st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,TRUE);
 							}
 							else{
 								location -= 4*(t->attr.decl.arr_size);
-								st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,FALSE);
+								st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE);
 							}
 						}
 						else typeError(t->lineno,"array error - should be modify");
@@ -89,11 +93,10 @@ static void insertNode( TreeNode * t){
 					}
 					break;
                 case ParaK:
-					//st_lookup();
-					if(/*no node*/){
+					if(st_lookup(t->attr.decl.name)==-1){
 						if(t->type == Array){
 							location += 4*(t->attr.decl.arr_size);
-							st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,FALSE);	
+							st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE);	
 						}
 						if(t->sibling == NULL) {
 							location = -4;
@@ -101,16 +104,17 @@ static void insertNode( TreeNode * t){
 					}
 					break;
                 default:
+					break;
             }
             break;
         case StmtK:
             switch (t->kind.stmt){ 
                 case CompndK:
 					scope++;
-					insert_scope();
+					insert_scope(scope);
 					break;//FompndK pass
                 case CallK:
-					st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,TRUE);
+					st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,t->type,TRUE);
 					break;
                 default:
                     break;
@@ -119,7 +123,7 @@ static void insertNode( TreeNode * t){
         case ExpK:
             switch (t->kind.exp){
                 case IdK:
-                    if (st_lookup(t->attr.name) == -1)
+                    if (st_lookup(t->attr.decl.name) == -1)
                     	return ;//error
 					//else
                         //if(t->child[0]!=NULL) st_insert(t->attr.name, t->lineno, location,Var,TRUE,t->attr.decl.arr_size,FALSE);
@@ -139,7 +143,8 @@ static void insertNode( TreeNode * t){
 
 
 void buildSymtab(TreeNode * syntaxTree){
-    insert_scope();
+    total_sym = NULL;
+	insert_scope(scope);
 	global_sym = total_sym;
 	traverse(syntaxTree,insertNode,nullProc);
     if (TraceAnalyze){ 
@@ -149,11 +154,6 @@ void buildSymtab(TreeNode * syntaxTree){
 }
 
 
-
-static void typeError(int lineno , char * message){
-    fprintf (listing, "Error in line %d: %s\n" , lineno, message);
-    Error = TRUE;
-}
 static void checkNode( TreeNode * t){
     switch (t->nodekind){ 
         case DeclK:
@@ -165,6 +165,7 @@ static void checkNode( TreeNode * t){
                 case VarArrK:
                 case ParaK:
                 default:
+					break;
             }
             break;
         case StmtK:

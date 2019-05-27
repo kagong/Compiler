@@ -30,6 +30,7 @@ static void push_type(Type);
 static Type pop_type();
 
 #define SAVEID do{\
+	int aaa=lineno;\
     push_ID(copyString(prev));\
     savedLineNo = lineno;\
 }while(0)\
@@ -79,7 +80,7 @@ var-declaration         :   type-specifier ID { SAVEID; } SEMI
                         |   type-specifier ID { SAVEID; } LSBRAKET NUM {temp = atoi(tokenString);} RSBRAKET SEMI         
                             {
                                 $$ = newDeclNode(VarArrK);
-                                $$ -> attr.decl.name =Integer_ID();
+                                $$ -> attr.decl.name =pop_ID();
                                 $$ -> lineno = savedLineNo;
                                 $$ -> type = pop_type();
                                 $$ -> attr.decl.arr_size = temp;
@@ -90,11 +91,11 @@ type-specifier          :   INT         {push_type(Integer);}
                         |   VOID        {push_type(Void);}
                         ;
 
-fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN compound-stmt
+fun-declaration         :   type-specifier ID {
+SAVEID;} LPAREN params RPAREN compound-stmt
                             {
                                 $$ = newDeclNode(FunK);
                                 $$ -> attr.decl.name = pop_ID();
-                                $$ -> lineno = savedLineNo;
                                 $$ -> type = pop_type();
                                 $$ -> child[0] = $5;
                                 $$ -> child[1] = $7;
