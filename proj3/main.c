@@ -14,7 +14,7 @@
     #include "parse.h"
     #if !NO_ANALYZE
         #include "analyze.h"
-        #if !NO_PARSE
+        #if !NO_CODE
             #include "cgen.h"
         #endif
     #endif
@@ -64,11 +64,11 @@ int main( int argc, char * argv[]){
 
     #if !NO_ANALYZE
     if(!Error){
-        fprintf(listing, "\nBuilding Symbol Table ... \ n");
+        fprintf(listing,"\nBuilding Symbol Table ... \ n");
         buildSymtab(syntaxTree);
-        fprintf(listing," \nChecking Types ... \n");
+        fprintf(listing,"\nChecking Types ... \n");
         typeCheck(syntaxTree);
-        fprintf (listing, " \n Type Checking Finished\n");
+        fprintf (listing,"\n Type Checking Finished\n");
     }
         #if !NO_CODE
         if (!Error){ 

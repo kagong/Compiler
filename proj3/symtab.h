@@ -12,8 +12,9 @@ static int hash ( char * key ){
     return temp;
 }
 
-typedef enum {Array,Int,Void} type_rec;
+const char* type_string[4] = {"","Array","Int","Void"};
 typedef enum {Var, Func, Par} isvpf;
+const char* vpf_string[3] = {"Var","Func","Par"};
 
 /* the list of line numbers of the source
  * code in which a variable is referenced
@@ -33,11 +34,11 @@ typedef struct LineListRec{
 typedef struct BucketListRec{
     char * name;
     LineList lines;
-    int malloc; /* memory location for variable */
+    int memloc; /* memory location for variable */
 	isvpf vpf;
 	int isarr;
 	int arrsize;
-	type_rec type;
+	Type type;
 	struct BucketListRec * next;
 } * BucketList;
 
@@ -48,7 +49,7 @@ typedef struct ScopeListRec{
 	struct ScopeListRect * next;
 } * ScopeList
 
-static ScopeList total_sym = NULL;
+ScopeList total_sym = NULL;
 void insert_scope();
 void st_insert(char* name, int lineno, int loc, int type );
 int st_lookup (char* name);

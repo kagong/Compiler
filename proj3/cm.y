@@ -133,7 +133,7 @@ param                   :   type-specifier ID
                                 $$ -> lineno = savedLineNo;
                                 $$ -> type = Array;
                                 if(pop_type() == Void)
-                                    $$ -> type = Error;
+                                    $$ -> type = Err;
                                 $$ -> attr.decl.arr_size = 0;
                             }
                         ;

@@ -141,7 +141,7 @@ static int checkNode( TreeNode * t){//postorder traverse
                     break;
                 case ParaK:
                     
-                    if(t->type == Error || t ->type == Void )
+                    if(t->type == Err || t ->type == Void )
                         return -1;
                     break;
                 default:
