@@ -202,6 +202,7 @@ void printTree( TreeNode * tree ){
         }
         else if (tree->nodekind==StmtK){ 
             switch (tree->kind.stmt){
+                case FomondK:
                 case CompndK:
                     fprintf(listing,"Compound statement\n");
                     break;

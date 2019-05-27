@@ -48,7 +48,7 @@ static int checkNode_preorder( TreeNode * t){//preorder traverse
             switch (t->kind.stmt){ 
                 case CompndK:
                     scope++;
-                    ++order;
+                    order = 0;
                     break;
                 case SelcK:
                     break;
