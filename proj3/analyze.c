@@ -6,7 +6,6 @@ static int location = 0;
 static int global_location = 0;
 static int func_loc = 0;
 static int scope = 0;
-
 //int scope_flag = FALSE;
 extern ScopeList total_sym;
 
@@ -16,7 +15,7 @@ static void typeError(int lineno , char * message){
 }
 //static char *fun_name;
 static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postProc) (TreeNode *)){
-    if (t != NULL){
+    if (t != NULL && Error == FALSE){
 		int _scope = scope;
 		preProc(t);
         int i; 
@@ -161,29 +160,71 @@ void buildSymtab(TreeNode * syntaxTree){
         printSymTab(listing);
     }
 }
-
-
-static void checkNode( TreeNode * t){
+static void checkNode( TreeNode * t){//postorder traverse
+    TreeNode * temp = NULL;
+    short flag;
+    if(Error == TRUE)
+        return ;
     switch (t->nodekind){ 
         case DeclK:
             switch (t->kind.decl){
-                case FunK:
+                case FunK://10
+                    temp = NULL;
+                    flag = 0;
+                    temp = t->child[1]->child[1];//stmts
+                    //ret value must be Integer 
+                    while(temp != NULL){
+                        if(temp -> nodekind == StmtK && temp -> kind.stmt == RetK){
+                            flag = 1;
+                            if(t -> type == Void){
+                                typeError(t->lineno , "Return type error!");
+                                typeError(temp->lineno , "\t this postion is return type error!");
+                            }
+
+                        }
+                        temp = temp -> sibling;
+                    }
+                    if (t ->type == Integer && flag == 0)
+                        typeError(t->lineno , "Return type error!");
                     break;
                 case VarK:
+                    if(t->type != Integer)
+                        typeError(t->lineno , "Declare type error!");
                     break;
                 case VarArrK:
+                    if(t->type != Integer)
+                        typeError(t->lineno , "Array Declare type error!");
+                    t->type = Array;
+
+                    break;
                 case ParaK:
+                    if(t->type == Err || t ->type == Void )
+                        typeError(t->lineno , "Parameter type error!");
+                    break;
                 default:
-					break;
+                    break;
             }
             break;
         case StmtK:
             switch (t->kind.stmt){ 
                 case CompndK:
+
+                    break;
                 case SelcK:
+                    if(t->child[0]->type != Integer)
+                                typeError(t->lineno , "expression type error!");
+                    break;
                 case IterK:
-                case RetK:
+                    if(t->child[0]->type != Integer)
+                                typeError(t->lineno , "expression type error!");
+                    break;
+                case RetK://10
+                    if(t->child[0] == NULL ||(t->child[0]!=NULL && t->child[0]->type != Integer))
+                                typeError(t->lineno , "Return type error!");
+                    t->type = Integer;
+                    break;
                 case CallK:
+                    break;
                 default:
                     break;
             }
@@ -191,10 +232,17 @@ static void checkNode( TreeNode * t){
         case ExpK:
             switch (t->kind.exp){
                 case IdK:
+                    if(t->type == Array_Nocheck && t->child[0]->type != Integer)
+                            typeError(t->lineno , "ID type error!");
+                    t -> type = Integer;
                     break;
                 case ConstK:
+                    break;
                 case OpK:
-
+                    if(!(t->child[0]->type == Integer && t -> child[1]->type == Integer))
+                                typeError(t->lineno , "Expression type error!");
+                    t->type = Integer;
+                    break;
                 default:
                     break;
             }
@@ -203,6 +251,7 @@ static void checkNode( TreeNode * t){
             break;
     }
 }
+
 
 void typeCheck(TreeNode * syntaxTree){
     traverse(syntaxTree,nullProc,checkNode);

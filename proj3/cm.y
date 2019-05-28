@@ -19,12 +19,9 @@ static TokenType StackOp[MAX_STACK];
 static char* StackID[MAX_STACK];
 static Type StackType[MAX_STACK];
 static int StackLine[MAX_STACK];
-static int top = -1,top_id = -1,top_type = -1,top_line=-1;
+static int top = -1,top_id = -1,top_type = -1;
 
 static int temp;
-
-//static void push_line(int);
-//static int pop_line();
 static void push_op(TokenType);
 static int pop_op();
 static void push_ID(char*);
@@ -90,7 +87,7 @@ type-specifier          :   INT         {push_type(Integer);}
                         |   VOID        {push_type(Void);}
                         ;
 
-fun-declaration         :   type-specifier ID {SAVEID;printf("%d\n",lineno);} LPAREN params RPAREN compound-stmt
+fun-declaration         :   type-specifier ID {SAVEID;} LPAREN params RPAREN compound-stmt
                             {
                                 $$ = newDeclNode(FunK);
                                 $$ -> attr.decl.name = pop_ID();
@@ -329,16 +326,6 @@ arg-list                :   arg-list COMMA expression
 empty                   :                                   {$$ = NULL;}
                         ;
 %%
-//static void push_line(int line){
-//    if(top_line >= MAX_STACK)
-//        return;
-//    StackLine[++top_line] = line;
-//}
-//static int pop_line(){
-//    if(top_line >= 0)
-//        return StackLine[top_line--];
-//    return -1;
-//}
 static void push_op(TokenType op){
     if(top >= MAX_STACK)
         return;
