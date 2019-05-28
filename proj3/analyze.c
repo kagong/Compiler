@@ -26,7 +26,7 @@ static void typeError(int lineno , char * message){
 //static char *fun_name;
 static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postProc) (TreeNode *)){
     if (t != NULL && Error == FALSE){
-        int _scope = scope;
+        int _scope = scope,_location=location;
         preProc(t);
         int i; 
         for (i=0; i < MAXCHILDREN; i++)
@@ -36,6 +36,7 @@ static void traverse( TreeNode * t ,void(* preProc) (TreeNode *),void (* postPro
             ScopeList _sym = total_sym;
             while(scope!=_sym->level) _sym = _sym->next;
             _sym->valid = FALSE;
+            location = _location;
         }
         scope = _scope;
         postProc(t);
@@ -328,6 +329,6 @@ static void checkNode( TreeNode * t){//postorder traverse
 
 void typeCheck(TreeNode * syntaxTree){
     traverse(syntaxTree,nullProc,checkNode);
-    if(main_flag == 0)
-        semanticError(0, "main must be defined!");
+    if(Error == FALSE && main_flag == 0)
+        semanticError(0,"main must be definded at last");
 }

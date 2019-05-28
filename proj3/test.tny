@@ -1,0 +1,48 @@
+int ar[100];
+void funcc(int i[],int k){
+    ;
+}
+int arar[100];
+int func(int i){
+    int arr[12];
+    if(arr[i] == 2){
+        int k;
+        while(1){
+            int k;
+            k = 12/i;
+            return 1;
+        }
+    }
+    while(0 <= 1){
+        int TAcheerup;
+        funcc(arr,i/2);
+    }
+
+    return i;
+}
+
+int ararar[100];
+
+void main(void){
+    int arr[10];
+    int i;
+    if(func(i) == 1){
+        int temp;
+        int tempp;
+        {
+            int temp[10];
+            {
+                int i;
+                temp[i] =ar[i/2] = arar[i+2];
+            }
+        }
+        {
+            int k;
+            {
+                int j;
+                j = tempp;
+            }
+        }
+        temp = 1 + func(i)*func(arr[0]);
+    }
+}
