@@ -6,8 +6,13 @@ static int location = 0;
 static int global_location = 0;
 static int func_loc = 0;
 static int scope = 0;
+static int main_flag = 0;
 //int scope_flag = FALSE;
 extern ScopeList total_sym;
+static void semanticError(int lineno , char * message){
+    fprintf (listing, "Semantic Error in line %d: %s\n" , lineno, message);
+    Error = TRUE;
+}
 
 static void scopeError(int lineno , char * message){
     fprintf (listing, "Scope Error in line %d: %s\n" , lineno, message);
@@ -226,13 +231,13 @@ static void checkNode( TreeNode * t){//postorder traverse
                         typeError(t->lineno , "Return type error!");
 
                     if(strcmp(t->attr.decl.name,"main") == 0){
+                        main_flag = 1;
                         if(t->type != Void)
                             typeError(t->lineno , "main's return type must be Void error!");
                         else if(t->child[0] != NULL)
                             typeError(t->lineno , "main's parameters must not exist error!");
                         else if(t->sibling != NULL)
-                            typeError(t->lineno , "main must delcare at last error!");
-
+                            semanticError(t->lineno , "main must delcare at last error!");
                     }
                     break;
                 case VarK:
@@ -274,7 +279,11 @@ static void checkNode( TreeNode * t){//postorder traverse
                 case CallK:
                     params = t -> node -> child[0],args = t->child[0];
                     while(params !=NULL){
-                        if(args == NULL || (params->type != args -> type)){
+                        if(args == NULL){
+                            semanticError(t->lineno , "parameter count error!");
+                            return ;
+                        }
+                        else if(params->type != args -> type){
                             typeError(t->lineno , "parameter type error!");
                             return ;
                         }
@@ -282,7 +291,7 @@ static void checkNode( TreeNode * t){//postorder traverse
                         args = args -> sibling;
                     }
                     if(args != NULL){
-                        typeError(t->lineno , "parameter count error!");
+                        semanticError(t->lineno , "parameter count error!");
                         return ;
                     }
                     t->type = t -> node ->type;
@@ -319,4 +328,6 @@ static void checkNode( TreeNode * t){//postorder traverse
 
 void typeCheck(TreeNode * syntaxTree){
     traverse(syntaxTree,nullProc,checkNode);
+    if(main_flag == 0)
+        semanticError(0, "main must be defined!");
 }
