@@ -51,7 +51,7 @@ static void insertNode( TreeNode * t){
             //printf("%s\n",t->attr.decl.name);
             switch (t->kind.decl){
                 case FunK:
-                    if(st_lookup(t->attr.decl.name,TRUE)==-1){
+                    if(st_lookup_func(t->attr.decl.name)==-1){
                         //insert fuction
                         st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,t->type,TRUE,TRUE,t);
                         location = 0;
@@ -102,7 +102,7 @@ static void insertNode( TreeNode * t){
                     }
                     break;
                 case ParaK:
-                    if(st_lookup(t->attr.decl.name,FALSE)==-1){
+                    if(st_lookup(t->attr.decl.name,TRUE)==-1){
                         int k=1;
                         TreeNode * ttmp = t;
                         while(ttmp->sibling != NULL){
@@ -120,6 +120,10 @@ static void insertNode( TreeNode * t){
                             location = -4;
                         }
                     }
+					else{
+						scopeError(t->lineno, "duplicate name!");
+						//duplicate
+					}
                     break;
                 default:
                     break;

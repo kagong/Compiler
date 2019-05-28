@@ -71,6 +71,14 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
     }
 
 }
+int st_lookup_func(char * name){
+	int h = hash(name);
+	ScopeList tmp = global_sym;
+	BucketList l;
+	l = (tmp->bucket)[h];
+	while((l != NULL) && (strcmp(name, l->name) != 0)) l = l->next;
+	return l == NULL ? -1 : 1;
+}
 int st_lookup ( char * name, int isdec ){
     int h = hash(name);
     ScopeList tmp = total_sym;
