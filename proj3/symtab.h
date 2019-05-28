@@ -39,6 +39,7 @@ typedef struct BucketListRec{
 	int isarr;
 	int arrsize;
 	Type type;
+    TreeNode * node;
 	struct BucketListRec * next;
 } * BucketList;
 
@@ -53,7 +54,7 @@ ScopeList total_sym ;
 ScopeList global_sym;
 
 void insert_scope(int scope);
-void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal,int isdec);
+void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal,int isdec,TreeNode *);
 int st_lookup (char* name,int );
 /* procedure printSymTab prints a formatted
 * listing of the symbol table contents

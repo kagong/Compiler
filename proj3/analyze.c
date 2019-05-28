@@ -9,8 +9,13 @@ static int scope = 0;
 //int scope_flag = FALSE;
 extern ScopeList total_sym;
 
+static void scopeError(int lineno , char * message){
+    fprintf (listing, "Scope Error in line %d: %s\n" , lineno, message);
+    Error = TRUE;
+}
+
 static void typeError(int lineno , char * message){
-    fprintf (listing, "Error in line %d: %s\n" , lineno, message);
+    fprintf (listing, "Type Error in line %d: %s\n" , lineno, message);
     Error = TRUE;
 }
 //static char *fun_name;
@@ -38,6 +43,9 @@ static void nullProc(TreeNode * t){
     else return;
 }
 static void insertNode( TreeNode * t){
+    TreeNode *temp;
+    if(Error == TRUE)
+        return ;
 	switch (t->nodekind){ 
         case DeclK:
             //printf("%s\n",t->attr.decl.name);
@@ -45,7 +53,7 @@ static void insertNode( TreeNode * t){
                 case FunK:
 					if(st_lookup(t->attr.decl.name,TRUE)==-1){
 						//insert fuction
-						st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,t->type,TRUE,TRUE);
+						st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,t->type,TRUE,TRUE,t);
 						location = 0;
 						scope++;
 						if(t->child[0]==NULL) location = -4;
@@ -60,14 +68,14 @@ static void insertNode( TreeNode * t){
 						if(scope!=0) {
 							if(t->type == Integer){
 								location -= WORD;
-								st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,Integer,FALSE,TRUE);
+								st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,Integer,FALSE,TRUE,t);
 							}
 							else typeError(t->lineno,"variable should be integer");
 						}
 						else{
 							if(t->type == Integer){
 								global_location += WORD;
-								st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,Integer,TRUE,TRUE);
+								st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,Integer,TRUE,TRUE,t);
 							}
 							else typeError(t->lineno,"variable should be integer");
 						}
@@ -80,11 +88,11 @@ static void insertNode( TreeNode * t){
 					if(st_lookup(t->attr.decl.name,TRUE)==-1){
 							if(scope==0){
 								global_location += 4*(t->attr.decl.arr_size);
-								st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,TRUE,TRUE);
+								st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,TRUE,TRUE,t);
 							}
 							else{
 								location -= 4*(t->attr.decl.arr_size);
-								st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,TRUE);
+								st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,TRUE,t);
 							}
 					}
 					else{
@@ -101,10 +109,10 @@ static void insertNode( TreeNode * t){
 						}
 						location = k*WORD;
 						if(t->type == Array){
-							st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE);	
+							st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
 						}
 						else if(t->type == Integer){
-							st_insert(t->attr.decl.name,t->lineno,location,Par,FALSE,t->attr.decl.arr_size,t->type,FALSE,FALSE);	
+							st_insert(t->attr.decl.name,t->lineno,location,Par,FALSE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
 						}
 						if(t->sibling == NULL) {
 							location = -4;
@@ -122,7 +130,8 @@ static void insertNode( TreeNode * t){
 					insert_scope(scope);
 					break;//FompndK pass
                 case CallK:
-					if(st_lookup(t->attr.decl.name,FALSE)!=-1) st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,t->type,TRUE,FALSE);
+					if(st_lookup(t->attr.decl.name,FALSE)!=-1) 
+                        st_insert(t->attr.decl.name,t->lineno,location,Func,FALSE,-1,t->type,TRUE,FALSE,t);
 					else {/*error*/}
 					break;
                 default:
@@ -133,11 +142,22 @@ static void insertNode( TreeNode * t){
             //printf("%s\n",t->attr.decl.name);
 			switch (t->kind.exp){
                 case IdK:
-                    if (st_lookup(t->attr.decl.name,FALSE) == -1){/*error*/}
-					else
-                        //array typechecking needed
-						//printf("%d %s %d\n",total_sym->next->valid,t->attr.decl.name,t->lineno);
-						st_insert(t->attr.decl.name, t->lineno, location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE);
+                    if (st_lookup(t->attr.decl.name,FALSE) == -1)
+                        scopeError(t->lineno , "Unknown ID"); 
+					else{
+                        temp == st_getnode(t->attr.decl.name);
+                        if(temp == NULL)
+                            scopeError(t->lineno , "Unknown error"); 
+                        // name을통해 
+                        if(t->type == Array_Nocheck){
+                            if(temp -> kind.decl != VarArrK)
+                                typeError(t->lineno , "this is not array"); 
+                        }
+                        if(temp -> kind.decl == FunK)
+                            typeError(t->lineno , "this is function not a var error!"); 
+    					st_insert(t->attr.decl.name, t->lineno, location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);
+                        
+                    }
                     break;
                 default:
                     break;
@@ -155,7 +175,7 @@ void buildSymtab(TreeNode * syntaxTree){
 	insert_scope(scope);
 	global_sym = total_sym;
 	traverse(syntaxTree,insertNode,nullProc);
-    if (TraceAnalyze){ 
+    if ( Error == FALSE && TraceAnalyze){ 
         fprintf(listing, "\nSymbol table:\n\n");
         printSymTab(listing);
     }
