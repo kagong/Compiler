@@ -1,7 +1,8 @@
 Sogang University 2019 spring Complier project
 
-name : Yun Je Hyeong (20151575)
-
+team number:    18
+name :          Yun Je Hyeong   (20151575) 
+                Oh Ji Min       (20151567)
 Projects:
 
 project#1 
