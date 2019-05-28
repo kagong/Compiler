@@ -47,6 +47,7 @@ typedef enum {Notype, Void, Integer, Array, Array_Nocheck, Err} Type;
 typedef struct treeNode{ 
     struct treeNode * child[MAXCHILDREN];
     struct treeNode * sibling;
+    struct treeNode * node;
     int lineno;
     
     NodeKind nodekind;

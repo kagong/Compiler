@@ -1,8 +1,8 @@
-int a(void){
-    return 1;
+int a(int c[]){
+    return c;
 }
 void main(void){
     int ab;
     int arr[1];
-    ab = a;
+    a(arr);
 }
