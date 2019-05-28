@@ -1,6 +1,6 @@
 CC = gcc
 OBJS = main.o util.o scan.o cm.tab.o symtab.o analyze.o 
-TARGET = 20151575
+TARGET = project3_18
  
 
 .SUFFIXES : .c .o
