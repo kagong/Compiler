@@ -60,7 +60,7 @@ static void insertNode( TreeNode * t){
                         insert_scope(scope);
                     }
                     else{
-                        //duplicate
+                        scopeError(t->lineno , "duplicate name!");
                     }
                     break;
                 case VarK:
@@ -82,6 +82,7 @@ static void insertNode( TreeNode * t){
                     }
                     else{
                         //duplicate
+                        scopeError(t->lineno , "duplicate name!");
                     }
                     break;
                 case VarArrK:
@@ -96,6 +97,7 @@ static void insertNode( TreeNode * t){
                         }
                     }
                     else{
+                        scopeError(t->lineno , "duplicate name!");
                         //duplicate
                     }
                     break;
@@ -158,10 +160,11 @@ static void insertNode( TreeNode * t){
                         
 
                         if(t->type == Array_Nocheck){//array 이고 array notaion을 사용
-                            if(temp -> kind.decl != VarArrK)
+                            if(temp -> kind.decl != VarArrK &&
+                                !(temp -> kind.decl == ParaK && temp -> type == Array))
                                 typeError(t->lineno , "this is not array"); 
                         }
-                        else if(temp -> kind.decl == VarArrK)//array notation을 안사용
+                        else if(temp -> kind.decl == VarArrK ||(temp -> kind.decl == ParaK && temp -> type == Array))//array notation을 안사용
                             t->type = Array;
                         else if(temp -> kind.decl == FunK)
                             typeError(t->lineno , "this is function not a var error!"); 
@@ -217,6 +220,16 @@ static void checkNode( TreeNode * t){//postorder traverse
                     }
                     if (t ->type == Integer && flag == 0)
                         typeError(t->lineno , "Return type error!");
+
+                    if(strcmp(t->attr.decl.name,"main") == 0){
+                        if(t->type != Void)
+                            typeError(t->lineno , "main's return type must be Void error!");
+                        else if(t->child[0] != NULL)
+                            typeError(t->lineno , "main's parameters must not exist error!");
+                        else if(t->sibling != NULL)
+                            typeError(t->lineno , "main must delcare at last error!");
+
+                    }
                     break;
                 case VarK:
                     if(t->type != Integer)
@@ -278,7 +291,7 @@ static void checkNode( TreeNode * t){//postorder traverse
             switch (t->kind.exp){
                 case IdK:
                     if(t->type == Array_Nocheck && t->child[0]->type != Integer)
-                        typeError(t->lineno , "ID type error!");
+                        typeError(t->lineno , "Index type error!");
 
                     if(t->type != Array)
                         t -> type = Integer;
