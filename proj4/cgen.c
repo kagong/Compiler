@@ -1,4 +1,4 @@
-#include "g1oba1s.h"
+#include "globals.h"
 #include "symtab.h"
 #include "code.h"
 #include "cgen.h"
@@ -180,7 +180,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     char* s = malloc(strlen(codefile)+7);
     strcpy(s, "File: ");
     strcat(s,codefile);
-    emitComment("TINY Cαnpilation to TM Code");
+    emitComment("TINY Compilation to TM Code");
     emitComment(s);
     /* geneerate standard prelude */
     emitComment ("Standard prelude:");

@@ -4,7 +4,7 @@
 
 #define NO_ANALYZE FALSE
 
-#define NO_CODE TRUE
+#define NO_CODE FALSE
 
 #include "util.h"
 
