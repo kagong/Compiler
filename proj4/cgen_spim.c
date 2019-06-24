@@ -156,13 +156,14 @@ static void genExp( TreeNode * tree){
 			if(tree->attr.op == ASSIGN){
 				cGen(p2);
 				if(p1->child[0]){
-					fprintf(code,"\tadd $t3, $t0, $zero\n");
+                    //a[i] = 3
+					fprintf(code,"\tadd $t3, $t0, $zero\n");//t3 = 3
 					cGen(p1->child[0]);
-					fprintf(code,"\tli $t2, 4\n");
-					fprintf(code,"\tmul $t2,$t2,$t0\n");
-					fprintf(code,"\tla $t1, %d($fp)\n",p1->loc);
-					fprintf(code,"\tadd $t1,$t1,$t2\n");
-					fprintf(code,"\tsw $t1,$t3\n");
+					fprintf(code,"\tli $t2, 4\n");          //t2 = word size
+					fprintf(code,"\tmul $t2,$t2,$t0\n");    //t2 = i
+					fprintf(code,"\taddi $t1, $fp, %d\n",p1->loc);    //t1 = a
+					fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
+					fprintf(code,"\tsw $t3, %d($t1)\n",0);
 				}
 				else fprintf(code,"\tsw %d($fp),$t0\n",tree->child[0]->loc);
 			}
@@ -209,7 +210,6 @@ static void genExp( TreeNode * tree){
 				fprintf(code,"\taddiu $sp, $sp, %d\n",WORD);
 				break;
 			}
->>>>>>> b4f32258746c83469a62ab404b767c40a4e88039
         default:
             break;
     }
@@ -251,15 +251,6 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     strcpy(s, "File: ");
     strcat(s,codefile);
     //fprintf(code, ".data\n");
-<<<<<<< HEAD
-    fprintf(code, "\n.text\n");
-    fprintf(code, ".align 2\n");
-    fprintf(code, ".globl main\n");
-    //initialize
-    fprintf(code, "$sp, 0x7fffffff");
-
-    cGen(syntaxTree);
-=======
 	fprintf(code, "\n.text\n");
 	fprintf(code, ".align 2\n");
 	fprintf(code, ".globl main\n");
@@ -267,6 +258,5 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
 	fprintf(code, "li $sp, 0x7fffffff");
 	
 	cGen(syntaxTree);
->>>>>>> b4f32258746c83469a62ab404b767c40a4e88039
 }
 
