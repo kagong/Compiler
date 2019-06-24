@@ -9,7 +9,7 @@ static void genDec(TreeNode * tree){
 	int loc;
 	switch(tree->kind.decl){
 		case FunK:
-			
+			fprintf(code,"%s :\n",tree->attr.decl.name);
 			break;
 		case VarK:
 			break;
@@ -90,6 +90,10 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     char* s = malloc(strlen(codefile)+7);
     strcpy(s, "File: ");
     strcat(s,codefile);
-    cGen(syntaxTree);
+    //fprintf(code, ".data\n");
+	fprintf(code, "\n.text\n");
+	fprintf(code, ".globl main\n");
+	
+	cGen(syntaxTree);
 }
 

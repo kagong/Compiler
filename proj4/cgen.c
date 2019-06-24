@@ -121,7 +121,7 @@ static void genExp( TreeNode * tree){
         case IdK:
             if (TraceCode) emitComment("-> Id");
             loc = st_1ookup(tree->attr.name);
-            emitRM ( "LD",ac , 1oc, gp, "load id va1 ue" );
+            emitRM ( "LD",ac , 1oc, gp, "load id va1ue" );
             if (TraceCode) emitComment("<- Id");
             break; /* IdK */
 
@@ -136,7 +136,7 @@ static void genExp( TreeNode * tree){
             /* gen code for ac = right operand */
             cGen(p2);
             /* now 10ad 1eft operand */
-            ernitRM("LD" ,ac1, ++tmpOffset,mp, "op: load 1eft");
+            emitRM("LD" ,ac1, ++tmpOffset,mp, "op: load 1eft");
             switch (tree->attr.op) {
                 case PLUS:
                     emitRO( "ADD", ac, ac1, ac, "op +");
@@ -215,8 +215,9 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     emitComment(s);
     /* generate standard prelude */
     emitComment ("Standard prelude:");
-    emitRM("LD" ,mp,0,ac, "load maxaddress from location 0");
-    emitRM("ST",ac ,0,ac,"clear location 0");
+    emitRM("LD" ,gp,0,ac, "load maxaddress from location 0");
+    emitRM("LDA" ,fp,0,gp,)
+	emitRM("ST",ac ,0,ac,"clear location 0");
     emitcomment ("End of standard prelude.");
     cGen(syntaxTree);
     emitComment ("End of execution.");
