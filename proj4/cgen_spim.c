@@ -140,25 +140,76 @@ static void genExp( TreeNode * tree){
             fprintf(code,"\tli $t0, %d\n",tree->attr.val);
             break;
         case IdK:
-            if(tree->child[0]){
-                //array
-            }
-            break;
+			if(p1){
+				cGen(p1);
+				fprintf(code,"\tli $t2, 4\n");
+				fprintf(code,"\tmul $t2,$t2,$t0\n");
+				fprintf(code,"\tla $t1, %d($fp)\n",tree->loc);
+				fprintf(code,"\tadd $t1,$t1,$t2\n");
+				fprintf(code,"\tlw $t0,%d($t1)\n",0);	
+			}
+			else{
+				fprintf(code,"\tlw $t0,%d($fp)\n",tree->loc);
+			}
+			break;
         case OpK:
-            switch(tree->attr.op){
-                case PLUS :
-                case MINUS :
-                case TIMES :
-                case OVER :
-                case LT :
-                case LET :
-                case GT :
-                case GET :
-                case EQ :
-                case NEQ :
-                case ASSIGN :
-            }
-            break;
+			if(tree->attr.op == ASSIGN){
+				cGen(p2);
+				if(p1->child[0]){
+					fprintf(code,"\tadd $t3, $t0, $zero\n");
+					cGen(p1->child[0]);
+					fprintf(code,"\tli $t2, 4\n");
+					fprintf(code,"\tmul $t2,$t2,$t0\n");
+					fprintf(code,"\tla $t1, %d($fp)\n",p1->loc);
+					fprintf(code,"\tadd $t1,$t1,$t2\n");
+					fprintf(code,"\tsw $t1,$t3\n");
+				}
+				else fprintf(code,"\tsw %d($fp),$t0\n",tree->child[0]->loc);
+			}
+			else{
+				cGen(p1);
+				fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);
+				fprintf(code,"\tsw $t0,%d($sp)\n",0);
+				cGen(p2);
+				fprintf(code,"\tlw $t1,%d($sp)\n",0);
+				switch(tree->attr.op){
+					case PLUS :
+						fprintf(code,"\tadd $t0,$t1,$t0\n");
+						break;
+					case MINUS :
+						fprintf(code,"\tsub $t0,$t1,$t0\n");
+						break;
+					case TIMES :
+						fprintf(code,"\tmul $t0,$t1,$t0\n");
+						break;
+					case OVER :
+						fprintf(code,"\tdiv $t0,$t1,$t0\n");
+						break;
+					case LT :
+						fprintf(code,"\tslt $t0,$t1,$t0\n");
+						break;
+					case LET :
+						fprintf(code,"\tsle $t0,$t1,$t0\n");
+						break;
+					case GT :
+						fprintf(code,"\tsgt $t0,$t1,$t0\n");
+						break;
+					case GET :
+						fprintf(code,"\tsge $t0,$t1,$t0\n");
+						break;
+					case EQ :
+						fprintf(code,"\tseq $t0,$t1,$t0\n");
+						break;
+					case NEQ :
+						fprintf(code,"\tsne $t0,$t1,$t0\n");
+						break;
+					default :
+						break;
+				}
+				fprintf(code,"\taddiu $sp, $sp, %d\n",WORD);
+				break;
+			}
+>>>>>>> b4f32258746c83469a62ab404b767c40a4e88039
         default:
             break;
     }
@@ -200,6 +251,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     strcpy(s, "File: ");
     strcat(s,codefile);
     //fprintf(code, ".data\n");
+<<<<<<< HEAD
     fprintf(code, "\n.text\n");
     fprintf(code, ".align 2\n");
     fprintf(code, ".globl main\n");
@@ -207,5 +259,14 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     fprintf(code, "$sp, 0x7fffffff");
 
     cGen(syntaxTree);
+=======
+	fprintf(code, "\n.text\n");
+	fprintf(code, ".align 2\n");
+	fprintf(code, ".globl main\n");
+	//initialize
+	fprintf(code, "li $sp, 0x7fffffff");
+	
+	cGen(syntaxTree);
+>>>>>>> b4f32258746c83469a62ab404b767c40a4e88039
 }
 
