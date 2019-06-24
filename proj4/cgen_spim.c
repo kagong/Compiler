@@ -8,10 +8,10 @@ static void genDec(TreeNode * tree){
 	int savedLoc1, savedLoc2, currentLoc;
 	int loc;
 	switch(tree->kind.decl){
-		case FunK:
-			
+		case FunK:	
 			break;
 		case VarK:
+
 			break;
 		case VarArrK:
 			break;

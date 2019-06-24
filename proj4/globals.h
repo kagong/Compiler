@@ -49,7 +49,10 @@ typedef struct treeNode{
     struct treeNode * sibling;
     struct treeNode * node;
     int lineno;
-    
+    //-------- project4
+    int isglobal;
+    int loc;
+    //----------------
     NodeKind nodekind;
     union { 
         DeclKind decl;
