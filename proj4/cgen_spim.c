@@ -144,7 +144,7 @@ static void genExp( TreeNode * tree){
 				cGen(p1);
 				fprintf(code,"\tli $t2, 4\n");
 				fprintf(code,"\tmul $t2,$t2,$t0\n");
-				fprintf(code,"\tla $t1, %d($fp)\n",tree->loc);
+				fprintf(code,"\tla $t1, %d(%s)\n",tree->loc, tree->isglobal ? "$gp" : "$fp");
 				fprintf(code,"\tadd $t1,$t1,$t2\n");
 				fprintf(code,"\tlw $t0,%d($t1)\n",0);	
 			}
@@ -161,7 +161,7 @@ static void genExp( TreeNode * tree){
 					cGen(p1->child[0]);
 					fprintf(code,"\tli $t2, 4\n");          //t2 = word size
 					fprintf(code,"\tmul $t2,$t2,$t0\n");    //t2 = i
-					fprintf(code,"\taddi $t1, $fp, %d\n",p1->loc);    //t1 = a
+					fprintf(code,"\taddi $t1, %s, %d\n", p1->isglobal== 1 ? "$gp" : "$fp",p1->loc);    //t1 = a
 					fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
 					fprintf(code,"\tsw $t3, %d($t1)\n",0);
 				}
