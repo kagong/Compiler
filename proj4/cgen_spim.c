@@ -10,6 +10,7 @@ static void genDec(TreeNode * tree){
 	switch(tree->kind.decl){
 		case FunK:
 			fprintf(code,"%s :\n",tree->attr.decl.name);
+			break;
 		case VarK:
 
 			break;
@@ -20,17 +21,43 @@ static void genDec(TreeNode * tree){
 	}
 }
 static void genStmt(TreeNode * tree){
-    TreeNode *p1, *p2, *p3;
+    TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
     switch(tree->kind.stmt){
         case FompndK:
 			break;
 		case CompndK:
 			break;
 		case SelcK:
+            int label_num1, label_num2;
+            cGen(p1);
+            label_num1 = allocate_label();
+            fprintf(code,"\tbeqz $t0, L%d\n",label_num1);
+            cGen(p2);
+            if(p3 != NULL){
+                label_num2 = allocate_label();
+                fprintf(code,"\tb L%d\n",label_num2);
+                fprintf(code,"L%d:\n",label_num1);
+                cGen(p3);
+                fprintf(code,"L%d:\n",label_num2);
+            }
+            else
+                fprintf(code,"L%d:\n",label_num1);
+            
 			break;
 		case IterK:
+            int label_num1, label_num2;
+            label_num1 = allocate_label();
+            label_num2 = allocate_label();
+            fprintf(code,"L%d:\n",label_num1);
+            cGen(p1);
+            fprintf(code,"\tbeqz $t0, L%d\n",label_num2);
+            cGen(p2);
+            fprintf(code,"\tb L%d\n",label_num1);
+            fprintf(code,"L%d:\n",label_num2);
 			break;
 		case RetK:
+            cGen(p1);
+            fprintf(code,"\taddi $a0, $t0, 0\n",label_num1);//jal 함순 선언에서
 			break;
 		case CallK:
 			break;
