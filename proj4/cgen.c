@@ -7,12 +7,26 @@ static int tmpOffset = 0;
 
 static void cGen (TreeNode * tree);
 
+static void genDec(TreeNode * tree){
+	TreeNode *p1, *p2, *p3;
+	int savedLoc1, savedLoc2, currentLoc;
+	int loc;
+	switch(tree->kind.decl){
+		case FunK:
+			break;
+		case VarK:
+			break;
+		case VarArrK:
+			break;
+		case ParaK:
+			break;
+	}
+}
 static void genStmt(TreeNode * tree){
-    TreeNode * p1, * p2, * p3;
+    TreeNode *p1, *p2, *p3;
     int savedLoc1, savedLoc2 ,currentLoc;
     int loc;
     switch(tree->kind.stmt){
-
         case IfK:
             if (TraceCode) emitComment("->if");
             p1 = tree->child[0];
@@ -154,7 +168,10 @@ static void genExp( TreeNode * tree){
 static void cGen( TreeNode * tree){
     if (tree != NULL){ 
         switch (tree->nodekind){
-            case StmtK:
+            case DeclK:
+				genDec(tree);
+				break;
+			case StmtK:
                 genStmt(tree);
                 break;
             case ExpK:
@@ -182,11 +199,11 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     strcat(s,codefile);
     emitComment("TINY Compilation to TM Code");
     emitComment(s);
-    /* geneerate standard prelude */
+    /* generate standard prelude */
     emitComment ("Standard prelude:");
     emitRM("LD" ,mp,0,ac, "load maxaddress from location 0");
-    emitRM("ST",ac ,0,ac,"c1ear 1ocation 0");
-    emitcomment ("End of standard pre1ude.");
+    emitRM("ST",ac ,0,ac,"clear location 0");
+    emitcomment ("End of standard prelude.");
     cGen(syntaxTree);
     emitComment ("End of execution.");
     emitRO("HALT" ,0, 0, 0,"");
