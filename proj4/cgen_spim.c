@@ -1,20 +1,15 @@
 #include "globals.h"
 #include "cgen.h"
 
-
+static int 
 
 static void genDec(TreeNode * tree){
 	TreeNode *p1, *p2, *p3;
 	int savedLoc1, savedLoc2, currentLoc;
 	int loc;
 	switch(tree->kind.decl){
-<<<<<<< HEAD
 		case FunK:
 			fprintf(code,"%s :\n",tree->attr.decl.name);
-=======
-		case FunK:	
->>>>>>> 67c2f7b37e360a2a0d1126579eb0dc5e96e69f97
-			break;
 		case VarK:
 
 			break;
@@ -47,14 +42,31 @@ static void genStmt(TreeNode * tree){
 /* procedure genExp generates codeat an expression node */
 static void genExp( TreeNode * tree){
     int loc;
-    TreeNode * p1, * p2;
+    TreeNode *p1 = tree->child[0], *p2 = tree->child[1];
     switch (tree->kind.exp){
         case ConstK:
-
+			fprintf(code,"\tli $t0, %d\n",tree->attr.val);
+			break;
         case IdK:
-
+			if(tree->child[0]){
+				//array
+			}
+			break;
         case OpK:
-
+			switch(tree->attr.op){
+				case PLUS :
+				case MINUS :
+				case TIMES :
+				case OVER :
+				case LT :
+				case LET :
+				case GT :
+				case GET :
+				case EQ :
+				case NEQ :
+				case ASSIGN :
+			}
+			break;
         default:
             break;
     }
@@ -97,7 +109,10 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     strcat(s,codefile);
     //fprintf(code, ".data\n");
 	fprintf(code, "\n.text\n");
+	fprintf(code, ".align 2\n");
 	fprintf(code, ".globl main\n");
+	//initialize
+	fprintf(code, "$sp, 0x7fffffff");
 	
 	cGen(syntaxTree);
 }
