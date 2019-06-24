@@ -4,11 +4,11 @@
 #define WORD 4
 int end_label = 0;
 static void genDec(TreeNode * tree){
-	TreeNode *p1, *p2, *p3;
-	int savedLoc1, savedLoc2, currentLoc;
-	int loc;
-	switch(tree->kind.decl){//stack 에 알규먼트 저장해주세여
-		case FunK:
+    TreeNode *p1, *p2, *p3;
+    int savedLoc1, savedLoc2, currentLoc;
+    int loc;
+    switch(tree->kind.decl){//stack 에 알규먼트 저장해주세여
+        case FunK:
             unsigned int count = 0;
             TreeNode *temp = NULL;
             temp = p1;
@@ -16,14 +16,14 @@ static void genDec(TreeNode * tree){
                 ++count;
                 temp = temp -> sibling;
             }
-			fprintf(code,"%s :\n",tree->attr.decl.name);
+            fprintf(code,"%s :\n",tree->attr.decl.name);
             fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//control link
             fprintf(code,"\tsw $fp, %d($sp)\n",0);
             fprintf(code,"\tadd $fp, $sp, $zero\n");
             fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
             fprintf(code,"\tsw $ra, %d($sp)\n",-WORD);
             cGen(p2);
-            
+
             end_label= allocate_label();
             fprintf(code,"L%d:\n",end_label);
             fprintf(code,"\tadd $sp, $fp, $zero\n");
@@ -31,33 +31,33 @@ static void genDec(TreeNode * tree){
             fprintf(code,"\tlw $ra, %d($fp)\n",-WORD);
             fprintf(code,"\tlw $fp, %d($fp)\n",0);
             fprintf(code,"\tjr $ra\n");
-            
-			break;
-		case VarK:
+
+            break;
+        case VarK:
             if(tree -> isglobal != 1)
                 fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);
-         //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc);
-			break;
-		case VarArrK:
+            //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc);
+            break;
+        case VarArrK:
             int len = tre -> attr.decl.arr_size;
             if(tree - > isglobal != 1)
                 fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD*len);
-           // for(inti i=0;i<len;i++)
-             //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc+i*WORD);
-			break;
-		case ParaK:
-			break;
-	}
+            // for(inti i=0;i<len;i++)
+            //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc+i*WORD);
+            break;
+        case ParaK:
+            break;
+    }
 }
 static void genStmt(TreeNode * tree){
     TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
     switch(tree->kind.stmt){
         case FompndK:
-		case CompndK:
+        case CompndK:
             cGen(p1);
             cGen(p2);
-			break;
-		case SelcK:
+            break;
+        case SelcK:
             int label_num1, label_num2;
             cGen(p1);
             label_num1 = allocate_label();
@@ -72,9 +72,9 @@ static void genStmt(TreeNode * tree){
             }
             else
                 fprintf(code,"L%d:\n",label_num1);
-            
-			break;
-		case IterK:
+
+            break;
+        case IterK:
             int label_num1, label_num2;
             label_num1 = allocate_label();
             label_num2 = allocate_label();
@@ -84,24 +84,48 @@ static void genStmt(TreeNode * tree){
             cGen(p2);
             fprintf(code,"\tb L%d\n",label_num1);
             fprintf(code,"L%d:\n",label_num2);
-			break;
-		case RetK:
+            break;
+        case RetK:
             cGen(p1);
             fprintf(code,"\taddi $a0, $t0, 0\n",label_num1);
             fprintf(code,"\tb L%d\n",end_label);
-			break;
-		case CallK:
-            TreeNode *temp = NULL;
-            temp = tree -> child[0];
-            while(temp != NULL){
-                genExp(temp);
-                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
-                fprintf(code,"\tsw $t0, %d($sp)\n",0);
-                temp = temp -> sibiling;
+            break;
+        case CallK:
+
+            if (!strcmp(t->attr.decl.name, "output"))
+            {
+                // print "output : "
+                fprintf(codeStream, "\n# output\n");
+                fprintf(codeStream, "move $t0, $v0\n");
+                fprintf(codeStream, "li $v0, 4\n");
+                fprintf(codeStream, "la $a0, output_str\n");
+                fprintf(codeStream, "syscall\n");
+                fprintf(codeStream, "move $v0, $t0\n");
+                // print_int
+                if (localCodeGen(t->attr.call.expr_list, codeStream, currStack + accLoc, 1) != (currStack + accLoc))
+                    DONT_OCCUR_PRINT;
+                fprintf(codeStream, "move $a0, $v0\n"); // the argument
+                fprintf(codeStream, "li $v0, 1\n");
+                fprintf(codeStream, "syscall\n");
+                // print newline
+                fprintf(codeStream, "li $v0, 4\n");
+                fprintf(codeStream, "la $a0, newline\n");
+                fprintf(codeStream, "syscall\n");
+
             }
-            fprintf(code,"\tjal %s\n",tree->attr.decl.name);
-            fprintf(code,"\tadd $t0 ,$a0, $zero\n");
-			break;
+            else{
+                TreeNode *temp = NULL;
+                temp = tree -> child[0];
+                while(temp != NULL){
+                    genExp(temp);
+                    fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
+                    fprintf(code,"\tsw $t0, %d($sp)\n",0);
+                    temp = temp -> sibiling;
+                }
+                fprintf(code,"\tjal %s\n",tree->attr.decl.name);
+                fprintf(code,"\tadd $t0 ,$a0, $zero\n");
+            }
+            break;
         default:
             break;
     }
@@ -113,28 +137,28 @@ static void genExp( TreeNode * tree){
     TreeNode *p1 = tree->child[0], *p2 = tree->child[1];
     switch (tree->kind.exp){
         case ConstK:
-			fprintf(code,"\tli $t0, %d\n",tree->attr.val);
-			break;
+            fprintf(code,"\tli $t0, %d\n",tree->attr.val);
+            break;
         case IdK:
-			if(tree->child[0]){
-				//array
-			}
-			break;
+            if(tree->child[0]){
+                //array
+            }
+            break;
         case OpK:
-			switch(tree->attr.op){
-				case PLUS :
-				case MINUS :
-				case TIMES :
-				case OVER :
-				case LT :
-				case LET :
-				case GT :
-				case GET :
-				case EQ :
-				case NEQ :
-				case ASSIGN :
-			}
-			break;
+            switch(tree->attr.op){
+                case PLUS :
+                case MINUS :
+                case TIMES :
+                case OVER :
+                case LT :
+                case LET :
+                case GT :
+                case GET :
+                case EQ :
+                case NEQ :
+                case ASSIGN :
+            }
+            break;
         default:
             break;
     }
@@ -147,9 +171,9 @@ static void cGen( TreeNode * tree){
     if (tree != NULL){ 
         switch (tree->nodekind){
             case DeclK:
-				genDec(tree);
-				break;
-			case StmtK:
+                genDec(tree);
+                break;
+            case StmtK:
                 genStmt(tree);
                 break;
             case ExpK:
@@ -176,12 +200,12 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
     strcpy(s, "File: ");
     strcat(s,codefile);
     //fprintf(code, ".data\n");
-	fprintf(code, "\n.text\n");
-	fprintf(code, ".align 2\n");
-	fprintf(code, ".globl main\n");
-	//initialize
-	fprintf(code, "$sp, 0x7fffffff");
-	
-	cGen(syntaxTree);
+    fprintf(code, "\n.text\n");
+    fprintf(code, ".align 2\n");
+    fprintf(code, ".globl main\n");
+    //initialize
+    fprintf(code, "$sp, 0x7fffffff");
+
+    cGen(syntaxTree);
 }
 
