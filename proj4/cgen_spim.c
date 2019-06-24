@@ -1,20 +1,49 @@
 #include "globals.h"
 #include "cgen.h"
 
-static int 
-
+#define WORD 4
+int end_label = 0;
 static void genDec(TreeNode * tree){
 	TreeNode *p1, *p2, *p3;
 	int savedLoc1, savedLoc2, currentLoc;
 	int loc;
-	switch(tree->kind.decl){
+	switch(tree->kind.decl){//stack 에 알규먼트 저장해주세여
 		case FunK:
+            unsigned int count = 0;
+            TreeNode *temp = NULL;
+            temp = p1;
+            while(temp == NULL){
+                ++count;
+                temp = temp -> sibling;
+            }
 			fprintf(code,"%s :\n",tree->attr.decl.name);
+            fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//control link
+            fprintf(code,"\tsw $fp, %d($sp)\n",0);
+            fprintf(code,"\tadd $fp, $sp, $zero\n");
+            fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
+            fprintf(code,"\tsw $ra, %d($sp)\n",-WORD);
+            cGen(p2);
+            
+            end_label= allocate_label();
+            fprintf(code,"L%d:\n",end_label);
+            fprintf(code,"\tadd $sp, $fp, $zero\n");
+            fprintf(code,"\taddiu $sp, $sp, %d\n",(count+1)*WORD);
+            fprintf(code,"\tlw $ra, %d($fp)\n",-WORD);
+            fprintf(code,"\tlw $fp, %d($fp)\n",0);
+            fprintf(code,"\tjr $ra\n");
+            
 			break;
 		case VarK:
-
+            if(tree -> isglobal != 1)
+                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);
+         //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc);
 			break;
 		case VarArrK:
+            int len = tre -> attr.decl.arr_size;
+            if(tree - > isglobal != 1)
+                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD*len);
+           // for(inti i=0;i<len;i++)
+             //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc+i*WORD);
 			break;
 		case ParaK:
 			break;
@@ -24,8 +53,9 @@ static void genStmt(TreeNode * tree){
     TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
     switch(tree->kind.stmt){
         case FompndK:
-			break;
 		case CompndK:
+            cGen(p1);
+            cGen(p2);
 			break;
 		case SelcK:
             int label_num1, label_num2;
@@ -57,9 +87,20 @@ static void genStmt(TreeNode * tree){
 			break;
 		case RetK:
             cGen(p1);
-            fprintf(code,"\taddi $a0, $t0, 0\n",label_num1);//jal 함순 선언에서
+            fprintf(code,"\taddi $a0, $t0, 0\n",label_num1);
+            fprintf(code,"\tb L%d\n",end_label);
 			break;
 		case CallK:
+            TreeNode *temp = NULL;
+            temp = tree -> child[0];
+            while(temp != NULL){
+                genExp(temp);
+                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
+                fprintf(code,"\tsw $t0, %d($sp)\n",0);
+                temp = temp -> sibiling;
+            }
+            fprintf(code,"\tjal %s\n",tree->attr.decl.name);
+            fprintf(code,"\tadd $t0 ,$a0, $zero\n");
 			break;
         default:
             break;
