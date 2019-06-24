@@ -13,6 +13,7 @@ static void genDec(TreeNode * tree){
 	int loc;
 	switch(tree->kind.decl){
 		case FunK:
+			
 			break;
 		case VarK:
 			break;
@@ -27,7 +28,20 @@ static void genStmt(TreeNode * tree){
     int savedLoc1, savedLoc2 ,currentLoc;
     int loc;
     switch(tree->kind.stmt){
-        case IfK:
+        case FompndK:
+			break;
+		case CompndK:
+			break;
+		case SelcK:
+			break;
+		case IterK:
+			break;
+		case RetK:
+			break;
+		case CallK:
+			break;
+		/* tiny */
+		case IfK:
             if (TraceCode) emitComment("->if");
             p1 = tree->child[0];
             p2 = tree->child[1];
@@ -75,7 +89,7 @@ static void genStmt(TreeNode * tree){
             emitRM("ST",ac,loc,gp,"assign: store value");
             if (TraceCode) emitComment( "<- assign");
             break; /* assign_k */
-
+ 
         case ReadK:
             emitRO( "IN" ,ac, 0, 0, "read integer value");
             loc = st_lookup(tree->attr.name);
