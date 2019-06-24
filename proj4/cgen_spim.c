@@ -8,10 +8,15 @@ static void genDec(TreeNode * tree){
 	int savedLoc1, savedLoc2, currentLoc;
 	int loc;
 	switch(tree->kind.decl){
+<<<<<<< HEAD
 		case FunK:
 			fprintf(code,"%s :\n",tree->attr.decl.name);
+=======
+		case FunK:	
+>>>>>>> 67c2f7b37e360a2a0d1126579eb0dc5e96e69f97
 			break;
 		case VarK:
+
 			break;
 		case VarArrK:
 			break;

@@ -59,6 +59,8 @@ static void insertNode( TreeNode * t){
                 case FunK:
                     if(st_lookup_func(t->attr.decl.name)==-1){
                         //insert fuction
+                        t->isglobal = 1;
+                        t->loc = func_loc;
                         st_insert(t->attr.decl.name,t->lineno,func_loc++,Func,FALSE,-1,t->type,TRUE,TRUE,t);
                         location = 0;
                         scope++;
@@ -74,6 +76,8 @@ static void insertNode( TreeNode * t){
                         if(scope!=0) {
                             if(t->type == Integer){
                                 location -= WORD;
+                            y1    t->isglobal = 0;
+                                t -> loc = location;
                                 st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,Integer,FALSE,TRUE,t);
                             }
                             else typeError(t->lineno,"variable should be integer");
@@ -81,6 +85,8 @@ static void insertNode( TreeNode * t){
                         else{
                             if(t->type == Integer){
                                 global_location += WORD;
+                                t-> isglobal = 1;
+                                t -> loc = global_location;
                                 st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,Integer,TRUE,TRUE,t);
                             }
                             else typeError(t->lineno,"variable should be integer");
@@ -95,10 +101,14 @@ static void insertNode( TreeNode * t){
                     if(st_lookup(t->attr.decl.name,TRUE)==-1){
                         if(scope==0){
                             global_location += 4*(t->attr.decl.arr_size);
+                            t-> isglobal = 1;
+                            t -> loc = global_location;
                             st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,TRUE,TRUE,t);
                         }
                         else{
                             location -= 4*(t->attr.decl.arr_size);
+                            t-> isglobal = 1;
+                            t -> loc = global_location;
                             st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,TRUE,t);
                         }
                     }
@@ -116,6 +126,9 @@ static void insertNode( TreeNode * t){
                             ttmp = ttmp->sibling;
                         }
                         location = k*WORD;
+                        
+                        t-> isglobal = 0;
+                        t -> loc = loaction;
                         if(t->type == Array){
                             st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
                         }
@@ -164,6 +177,8 @@ static void insertNode( TreeNode * t){
                     if (st_lookup(t->attr.decl.name,FALSE) == -1)
                         scopeError(t->lineno , "Unknown ID"); 
                     else{
+                        t-> isglobal = st_lookup(t->attr.decl.name,TRUE) == 1 ? 1:0;
+                        t -> loc = st_lookup(t->attr.decl.name,FALSE);
                         temp = st_getnode(t->attr.decl.name);
                         if(temp == NULL)
                             scopeError(t->lineno , "Unknown error"); 
