@@ -1,0 +1,17 @@
+int cnt;
+void main(void){
+    int arr[10];
+    int t;
+    int l;
+    t = 0;
+    cnt = 3;
+    while(t<cnt){
+        l=0;
+        while(l<cnt){
+            l = l+1;
+            output(t);
+
+        }
+        t = t+1;
+    }
+}
