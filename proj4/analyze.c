@@ -182,7 +182,9 @@ static void insertNode( TreeNode * t){
                     else{
                         t -> isglobal = st_lookup_isglobal(t->attr.decl.name);
                         t -> loc = st_lookup(t->attr.decl.name,FALSE);
+                        printf("%s %d\n",t->attr.decl.name,t->isglobal);
                         temp = st_getnode(t->attr.decl.name);
+                        t->node = temp;
                         if(temp == NULL)
                             scopeError(t->lineno , "Unknown error"); 
                         
@@ -328,7 +330,7 @@ static void checkNode( TreeNode * t){//postorder traverse
             switch (t->kind.exp){
                 case IdK:
                     if(t->type == Array_Nocheck && t->child[0]->type != Integer)
-                        typeError(t->lineno , "Index type error!");
+                            typeError(t->lineno , "Index type error!");
 
                     if(t->type != Array)
                         t -> type = Integer;

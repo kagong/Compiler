@@ -25,6 +25,7 @@ static void genDec(TreeNode * tree){
                 ++count;
                 temp = temp -> sibling;
             }
+            cGen(p1);
             fprintf(code,"%s :\n",tree->attr.decl.name);
             if(!strcmp(tree->attr.decl.name,"main")){
          //       fprintf(code, "\tli $sp, 0x7fffffff\n");
@@ -60,6 +61,9 @@ static void genDec(TreeNode * tree){
             //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc+i*WORD);
             break;
         case ParaK:
+            if(tree -> type == Array)
+                tree -> type = Pointer;
+            //array 인 경우 pointer
             break;
     }
 }
@@ -171,28 +175,48 @@ static void genExp( TreeNode * tree){
             fprintf(code,"\tli $t0, %d\n",tree->attr.val);
             break;
         case IdK:
+            fprintf(code,"#->idk %s\n",tree->attr.decl.name);
+            if(tree->node ->kind.decl == ParaK)
+                tree -> type = Pointer;
             if(p1){
                 cGen(p1);
                 fprintf(code,"\tli $t2, 4\n");
                 fprintf(code,"\tmul $t2,$t2,$t0\n");
-                fprintf(code,"\tla $t1, %d(%s)\n",tree->loc, tree->isglobal ? "$gp" : "$fp");
+                if(tree -> type == Pointer){
+                    fprintf(code,"\tlw $t1, %d(%s)\n",tree->loc, tree->isglobal ? "$gp" : "$fp");//4(fp)
+                    fprintf(code,"\tla $t1, 0($t1)\n#this idk a[i]\n"); //*(arr)
+                }
+                else//array
+                    fprintf(code,"\tla $t1, %d(%s)\n#this idk a[i]\n",tree->loc, tree->isglobal ? "$gp" : "$fp");
                 fprintf(code,"\tadd $t1,$t1,$t2\n");
                 fprintf(code,"\tlw $t0,%d($t1)\n",0);	
             }
             else{
-                fprintf(code,"\t%s $t0,%d(%s)\n#this",tree->type == Array ? "lw" : "lw",tree->loc, tree->isglobal ? "$gp" : "$fp");
+                if(tree -> type == Array)
+                    fprintf(code,"\tla $t0,%d(%s)\n#this idk a\n",tree->loc, tree->isglobal ? "$gp" : "$fp");
+                else
+                    fprintf(code,"\tlw $t0,%d(%s)\n#this idk a\n",tree->loc, tree->isglobal ? "$gp" : "$fp");
             }
+            fprintf(code,"#<-idk %s\n",tree->attr.decl.name);
             break;
         case OpK:
             if(tree->attr.op == ASSIGN){
                 cGen(p2);
-                if(p1->child[0]){
+                if(p1->child[0]){//array pointer
                     //a[i] = 3
                     fprintf(code,"\tadd $t3, $t0, $zero\n");//t3 = 3
                     cGen(p1->child[0]);
                     fprintf(code,"\tli $t2, 4\n");          //t2 = word size
                     fprintf(code,"\tmul $t2,$t2,$t0\n");    //t2 = i
-                    fprintf(code,"\taddi $t1, %s, %d\n", p1->isglobal== 1 ? "$gp" : "$fp",p1->loc);    //t1 = a
+                    if(p1->node ->kind.decl != ParaK){//array
+        
+                        fprintf(code,"#this arrat\n");
+                        fprintf(code,"\taddi $t1, %s, %d\n", p1->isglobal== 1 ? "$gp" : "$fp",p1->loc);    //t1 = a
+                    }
+                    else {//Pointer
+                        fprintf(code,"#this not arrat\n");
+                        fprintf(code,"\tlw $t1, %d(%s)\n",p1->loc, p1->isglobal== 1 ? "$gp" : "$fp");    //t1 = a
+                    }
                     fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
                     fprintf(code,"\tsw $t3, %d($t1)\n",0);
                 }
@@ -220,16 +244,16 @@ static void genExp( TreeNode * tree){
                         fprintf(code,"\tdiv $t0,$t1,$t0\n");
                         break;
                     case LT :
-                        fprintf(code,"\tslt $t0,$t1,$t0\n");
-                        break;
-                    case LET :
-                        fprintf(code,"\tsle $t0,$t1,$t0\n");
-                        break;
-                    case GT :
                         fprintf(code,"\tsgt $t0,$t1,$t0\n");
                         break;
-                    case GET :
+                    case LET :
                         fprintf(code,"\tsge $t0,$t1,$t0\n");
+                        break;
+                    case GT :
+                        fprintf(code,"\tslt $t0,$t1,$t0\n");
+                        break;
+                    case GET :
+                        fprintf(code,"\tsle $t0,$t1,$t0\n");
                         break;
                     case EQ :
                         fprintf(code,"\tseq $t0,$t1,$t0\n");

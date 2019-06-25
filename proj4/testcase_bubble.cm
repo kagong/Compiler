@@ -1,7 +1,7 @@
 int cnt;
 int arr[10];
 
-int swap(int i, int j){
+void swap(int i, int j){
     int tmp;
     tmp = arr[i];
     arr[i] = arr[j];
@@ -11,7 +11,7 @@ int init(void){
     int c;
     int i;
     i = 0;
-    c = intput();
+    c = input();
     while(i<c){
         arr[i] = input();
         i = i+1;
@@ -44,5 +44,5 @@ void bubbleSort(void){
 void main(void){
     cnt = init();
     bubbleSort();
-    print():
+    print();
 }

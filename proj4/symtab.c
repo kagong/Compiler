@@ -84,6 +84,8 @@ int st_lookup_isglobal ( char *name){
          while ((l != NULL) && (strcmp(name, l->name) != 0)){
             l = l->next; 
         }
+        if(l != NULL)
+            break;
         tmp = tmp ->next;
     }
     return tmp == global_sym ? 1 : 0;
