@@ -107,8 +107,8 @@ static void insertNode( TreeNode * t){
                         }
                         else{
                             location -= 4*(t->attr.decl.arr_size);
-                            t-> isglobal = 1;
-                            t -> loc = global_location;
+                            t-> isglobal = 0;
+                            t -> loc = location;
                             st_insert(t->attr.decl.name,t->lineno,location,Var,TRUE,t->attr.decl.arr_size,t->type,FALSE,TRUE,t);
                         }
                     }
@@ -180,7 +180,7 @@ static void insertNode( TreeNode * t){
                     if (st_lookup(t->attr.decl.name,FALSE) == -1)
                         scopeError(t->lineno , "Unknown ID"); 
                     else{
-                        t-> isglobal = st_lookup(t->attr.decl.name,TRUE) == 1 ? 1:0;
+                        t-> isglobal = st_lookup(t->attr.decl.name,TRUE) == 1 ? 0:1;
                         t -> loc = st_lookup(t->attr.decl.name,FALSE);
                         temp = st_getnode(t->attr.decl.name);
                         if(temp == NULL)

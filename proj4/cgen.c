@@ -190,7 +190,10 @@ static void genExp( TreeNode * tree){
 					fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
 					fprintf(code,"\tsw $t3, %d($t1)\n",0);
 				}
-				else fprintf(code,"\tsw $t0, %d(%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
+				else {
+                    printf("%s %d\n",p1->attr.decl.name,p1->isglobal);
+                    fprintf(code,"\tsw $t0, %d(%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
+                }
 			}
 			else{
 				cGen(p1);
