@@ -1,8 +1,0 @@
-void recul(int a[]){
-   output(a[2]);
-}
-void main(void){
-    int arr[10];
-    arr[2] = 1;
-    recul(arr);
-}

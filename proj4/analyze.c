@@ -297,8 +297,10 @@ static void checkNode( TreeNode * t){//postorder traverse
                     break;
                 case CallK:
                     if(!strcmp(t->attr.decl.name,"input")
-                        || !strcmp(t->attr.decl.name,"output"))
+                        || !strcmp(t->attr.decl.name,"output")){
+                        t -> type = Integer;
                         break;
+                    }
                     params = t -> node -> child[0],args = t->child[0];
                     while(params !=NULL){
                         if(args == NULL){
