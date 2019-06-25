@@ -7,7 +7,7 @@ static int allocate_label(){
     static int label=0;
     return ++label;
 }
-static void genExp( TreeNode * tree);
+static void cGen_argument(TreeNode * tree);    
 static void cGen( TreeNode * tree);
 static void genDec(TreeNode * tree){
     TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
@@ -134,7 +134,7 @@ static void genStmt(TreeNode * tree){
                 fprintf(code, "\tmove $v0, $t0\n");
                 temp = p1;
                 while(temp != NULL){
-                    genExp(temp);
+                    cGen_argument(temp);
                     fprintf(code, "\tmove $a0, $t0\n"); // the argument
                     fprintf(code, "\tli $v0, 1\n");
                     fprintf(code, "\tsyscall\n");
@@ -150,7 +150,7 @@ static void genStmt(TreeNode * tree){
             else{
                 temp = tree -> child[0];
                 while(temp != NULL){
-                    genExp(temp);
+                    cGen_argument(temp);
                     fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);//return address
                     fprintf(code,"\tsw $t0, %d($sp)\n",0);
                     temp = temp -> sibling;
@@ -208,21 +208,18 @@ static void genExp( TreeNode * tree){
                     cGen(p1->child[0]);
                     fprintf(code,"\tli $t2, 4\n");          //t2 = word size
                     fprintf(code,"\tmul $t2,$t2,$t0\n");    //t2 = i
-                    if(p1->node ->kind.decl != ParaK){//array
-        
-                        fprintf(code,"#this arrat\n");
+                    if(p1->node ->kind.decl != ParaK)//array
                         fprintf(code,"\taddi $t1, %s, %d\n", p1->isglobal== 1 ? "$gp" : "$fp",p1->loc);    //t1 = a
-                    }
-                    else {//Pointer
-                        fprintf(code,"#this not arrat\n");
+                    else 
                         fprintf(code,"\tlw $t1, %d(%s)\n",p1->loc, p1->isglobal== 1 ? "$gp" : "$fp");    //t1 = a
-                    }
+                    
                     fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
                     fprintf(code,"\tsw $t3, %d($t1)\n",0);
+                    fprintf(code,"\tadd $t0, $t3, $zero\n");
                 }
-                else {
+                else 
                     fprintf(code,"\tsw $t0, %d(%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
-                }
+                
             }
             else{
                 cGen(p1);
@@ -275,6 +272,8 @@ static void genExp( TreeNode * tree){
 /* procedure cGen recursively generates code by
  * tree traversal
  */
+
+
 static void cGen( TreeNode * tree){
     if (tree != NULL){ 
         switch (tree->nodekind){
@@ -293,7 +292,23 @@ static void cGen( TreeNode * tree){
         cGen(tree->sibling);
     }
 }
-
+static void cGen_argument(TreeNode * tree){    
+    if (tree != NULL){ 
+        switch (tree->nodekind){
+            case DeclK:
+                genDec(tree);
+                break;
+            case StmtK:
+                genStmt(tree);
+                break;
+            case ExpK:
+                genExp(tree);
+                break;
+            default:
+                break;
+        }
+    }
+}
 /***********************************************/
 /* the primary function of the code generator */
 /***********************************************/

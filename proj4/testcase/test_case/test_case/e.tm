@@ -1,745 +1,385 @@
-############### Data segment ###############
 .data
 newline: .asciiz "\n"
-input_prompt: .asciiz "Enter value for IN instruction : "
-output_prompt: .asciiz "OUT instruction prints : "
-############### Code segment ###############
+output_str: .asciiz "Output : "
+input_str: .asciiz "Input : "
+
 .text
-addi $t1, $zero, 1
-sll $t1, $t1, 31
+.align 4
+.globl main
+minloc :
+	addi $sp, $sp, -4
+	sw $fp, 0($sp)
+	add $fp, $sp, $zero
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	addi $sp, $sp, -4
+	addi $sp, $sp, -4
+	addi $sp, $sp, -4
+#->idk low
+	lw $t0,8($fp)
+#this idk a
+#<-idk low
+	sw $t0, -16($fp)
+#->idk a
+#->idk low
+	lw $t0,8($fp)
+#this idk a
+#<-idk low
+	li $t2, 4
+	mul $t2,$t2,$t0
+	lw $t1, 12($fp)
+	la $t1, 0($t1)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk a
+	sw $t0, -12($fp)
+#->idk low
+	lw $t0,8($fp)
+#this idk a
+#<-idk low
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	add $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	sw $t0, -8($fp)
+L2:
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+#->idk high
+	lw $t0,4($fp)
+#this idk a
+#<-idk high
+	lw $t1,0($sp)
+	slt $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	beqz $t0, L3
+#->idk a
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+	lw $t1, 12($fp)
+	la $t1, 0($t1)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk a
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+#->idk x
+	lw $t0,-12($fp)
+#this idk a
+#<-idk x
+	lw $t1,0($sp)
+	slt $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	beqz $t0, L4
+#->idk a
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+	lw $t1, 12($fp)
+	la $t1, 0($t1)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk a
+	sw $t0, -12($fp)
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	sw $t0, -16($fp)
+L4:
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	add $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	sw $t0, -8($fp)
+	b L2
+L3:
+#->idk k
+	lw $t0,-16($fp)
+#this idk a
+#<-idk k
+	addi $a0, $t0, 0
+	b L1
+#return
+L1:
+	add $sp, $fp, $zero
+	addiu $sp, $sp, 16
+	lw $ra, -4($fp)
+	lw $fp, 0($fp)
+	j $ra
+sort :
+	addi $sp, $sp, -4
+	sw $fp, 0($sp)
+	add $fp, $sp, $zero
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	addi $sp, $sp, -4
+	addi $sp, $sp, -4
+#->idk low
+	lw $t0,8($fp)
+#this idk a
+#<-idk low
+	sw $t0, -8($fp)
+L6:
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+#->idk high
+	lw $t0,4($fp)
+#this idk a
+#<-idk high
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	sub $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	lw $t1,0($sp)
+	slt $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	beqz $t0, L7
+	addi $sp, $sp, -4
+#->idk a
+	lw $t0,12($fp)
+#this idk a
+#<-idk a
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+#->idk high
+	lw $t0,4($fp)
+#this idk a
+#<-idk high
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+	jal minloc
+	add $t0 ,$a0, $zero
+	sw $t0, -12($fp)
+#->idk a
+#->idk k
+	lw $t0,-12($fp)
+#this idk a
+#<-idk k
+	li $t2, 4
+	mul $t2,$t2,$t0
+	lw $t1, 12($fp)
+	la $t1, 0($t1)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk a
+	sw $t0, -16($fp)
+#->idk a
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+	lw $t1, 12($fp)
+	la $t1, 0($t1)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk a
+	add $t3, $t0, $zero
+#->idk k
+	lw $t0,-12($fp)
+#this idk a
+#<-idk k
+	li $t2, 4
+	mul $t2,$t2,$t0
+#this not arrat
+	lw $t1, 12($fp)
+	add $t1,$t1,$t2
+	sw $t3, 0($t1)
+#->idk t
+	lw $t0,-16($fp)
+#this idk a
+#<-idk t
+	add $t3, $t0, $zero
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+#this not arrat
+	lw $t1, 12($fp)
+	add $t1,$t1,$t2
+	sw $t3, 0($t1)
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	add $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	sw $t0, -8($fp)
+	b L6
+L7:
+L5:
+	add $sp, $fp, $zero
+	addiu $sp, $sp, 16
+	lw $ra, -4($fp)
+	lw $fp, 0($fp)
+	j $ra
+main :
+	addi $sp, $sp, -4
+	sw $fp, 0($sp)
+	add $fp, $sp, $zero
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	addi $sp, $sp, -4
+	addi $sp, $sp, -40
+	li $t0, 0
+	sw $t0, -8($fp)
+L9:
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 10
+	lw $t1,0($sp)
+	slt $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	beqz $t0, L10
 
-minloc:
-#FuncK Return Address Save
-addi $fp, $sp, 0
-addi $sp, $sp, -4
-sw $ra, 0($sp)
-#FuncK Parameter
-#ParamK a
-#ParamK low
-#ParamK high
-#FuncK Statements
-#CompoundK Declarations
-#DeclareK INT
-addi $sp, $sp, -4
-#DeclareK INT
-addi $sp, $sp, -4
-#DeclareK INT
-addi $sp, $sp, -4
-#CompoundK Statements
-#ExpK lefthand
-#IdK k
-addi $sp, $sp, -4
-addi $v0, $fp, -16
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK low
-lw $v0, 8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK x
-addi $sp, $sp, -4
-addi $v0, $fp, -12
-sw $v0, 0($sp)
-#ExpK righthand
-#ArrK a[]
-#IdK low
-lw $v0, 8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK low
-lw $v0, 8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK +
-add $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-label0:
-#WhileK condition
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK high
-lw $v0, 4($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK <
-slt $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-addi $sp, $sp, 4
-beq $v0, $zero, label1
-#WhileK statement
-#CompoundK Declarations
-#CompoundK Statements
-#IfK condition
-#ExpK lefthand
-#ArrK a[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK x
-lw $v0, -12($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK <
-slt $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-addi $sp, $sp, 4
-beq $v0, $zero, label2
-#IfK then
-#CompoundK Declarations
-#CompoundK Statements
-#ExpK lefthand
-#IdK x
-addi $sp, $sp, -4
-addi $v0, $fp, -12
-sw $v0, 0($sp)
-#ExpK righthand
-#ArrK a[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK k
-addi $sp, $sp, -4
-addi $v0, $fp, -16
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-label2:
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK +
-add $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-beq $zero, $zero, label0
-label1:
-#ReturnK computation
-#IdK k
-lw $v0, -16($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ReturnK return seq
-lw $t0, 0($sp)
-addi $sp, $fp, 0
-lw $fp, 0($sp)
-lw $ra, -4($sp)
-addi $sp, $sp, 16
-jr $ra
-#FuncK Void Return
-lw $ra, -4($fp)
-addi $sp, $fp, 0
-lw $fp, 0($sp)
-addi $sp, $sp, -16
-jr $ra
+	# input
+	li $v0, 4
+	la $a0, input_str
+	syscall
+	li $v0, 5
+	syscall
+	move $t0, $v0
+	add $t3, $t0, $zero
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+#this arrat
+	addi $t1, $fp, -48
+	add $t1,$t1,$t2
+	sw $t3, 0($t1)
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	add $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	sw $t0, -8($fp)
+	b L9
+L10:
+#->idk x
+	la $t0,-48($fp)
+#this idk a
+#<-idk x
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+	li $t0, 0
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+	li $t0, 10
+	addi $sp, $sp, -4
+	sw $t0, 0($sp)
+	jal sort
+	add $t0 ,$a0, $zero
+	li $t0, 0
+	sw $t0, -8($fp)
+L11:
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 10
+	lw $t1,0($sp)
+	slt $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	beqz $t0, L12
 
-sort:
-#FuncK Return Address Save
-addi $fp, $sp, 0
-addi $sp, $sp, -4
-sw $ra, 0($sp)
-#FuncK Parameter
-#ParamK a
-#ParamK low
-#ParamK high
-#FuncK Statements
-#CompoundK Declarations
-#DeclareK INT
-addi $sp, $sp, -4
-#DeclareK INT
-addi $sp, $sp, -4
-#CompoundK Statements
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK low
-lw $v0, 8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-label3:
-#WhileK condition
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK high
-lw $v0, 4($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK -
-sub $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK <
-slt $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-addi $sp, $sp, 4
-beq $v0, $zero, label4
-#WhileK statement
-#CompoundK Declarations
-#DeclareK INT
-addi $sp, $sp, -4
-#CompoundK Statements
-#ExpK lefthand
-#IdK k
-addi $sp, $sp, -4
-addi $v0, $fp, -12
-sw $v0, 0($sp)
-#ExpK righthand
-#CallK Argument Computation
-#IdK a
-addi $sp, $sp, -4
-addi $v0, $fp, 12
-sw $v0, 0($sp)
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#IdK high
-lw $v0, 4($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#CallK Call Sequence
-addi $sp, $sp, -4
-sw $fp, 0($sp)
-jal minloc
-addi $sp, $sp, -4
-sw $t0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK t
-addi $sp, $sp, -4
-addi $v0, $fp, -16
-sw $v0, 0($sp)
-#ExpK righthand
-#ArrK a[]
-#IdK k
-lw $v0, -12($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#ArrK a[]
-#IdK k
-lw $v0, -12($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK righthand
-#ArrK a[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#ArrK a[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, 12
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK righthand
-#IdK t
-lw $v0, -16($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK +
-add $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-beq $zero, $zero, label3
-label4:
-#FuncK Void Return
-lw $ra, -4($fp)
-addi $sp, $fp, 0
-lw $fp, 0($sp)
-addi $sp, $sp, -16
-jr $ra
-
-main:
-#FuncK Return Address Save
-addi $fp, $sp, 0
-addi $sp, $sp, -4
-sw $ra, 0($sp)
-#FuncK Parameter
-#FuncK Statements
-#CompoundK Declarations
-#DeclareK INT
-addi $sp, $sp, -4
-#DeclareK INTARR
-addi $sp, $sp, -40
-#CompoundK Statements
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 0
-addi $sp, $sp, -4
-li $v0, 0
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-label5:
-#WhileK condition
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 10
-addi $sp, $sp, -4
-li $v0, 10
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK <
-slt $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-addi $sp, $sp, 4
-beq $v0, $zero, label6
-#WhileK statement
-#CompoundK Declarations
-#CompoundK Statements
-#ExpK lefthand
-#ArrK x[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, -48
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#ExpK righthand
-#input prompt
-li $v0, 4
-la $a0, input_prompt
-syscall
-#read int
-li $v0, 5
-syscall
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK +
-add $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-beq $zero, $zero, label5
-label6:
-#CallK Argument Computation
-#IdK x
-addi $sp, $sp, -4
-addi $v0, $fp, -48
-sw $v0, 0($sp)
-#ConstK 0
-addi $sp, $sp, -4
-li $v0, 0
-sw $v0, 0($sp)
-#ConstK 10
-addi $sp, $sp, -4
-li $v0, 10
-sw $v0, 0($sp)
-#CallK Call Sequence
-addi $sp, $sp, -4
-sw $fp, 0($sp)
-jal sort
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 0
-addi $sp, $sp, -4
-li $v0, 0
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-label7:
-#WhileK condition
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 10
-addi $sp, $sp, -4
-li $v0, 10
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK <
-slt $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-addi $sp, $sp, 4
-beq $v0, $zero, label8
-#WhileK statement
-#CompoundK Declarations
-#CompoundK Statements
-#ArrK x[]
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-lw $v0, 0($sp)
-li $v1, 4
-mul $v0, $v0, $v1
-add, $v0, $v0, $fp
-addi, $v0, $v0, -48
-lw $v0, 0($v0)
-sw $v0, 0($sp)
-#output prompt
-li $v0, 4
-la $a0, output_prompt
-syscall
-
-#print int
-lw $a0, 0($sp)
-addi $sp, $sp, 4
-li $v0, 1
-syscall
-li $v0, 4
-la $a0, newline
-syscall
-#ExpK lefthand
-#IdK i
-addi $sp, $sp, -4
-addi $v0, $fp, -8
-sw $v0, 0($sp)
-#ExpK righthand
-#ExpK lefthand
-#IdK i
-lw $v0, -8($fp)
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK righthand
-#ConstK 1
-addi $sp, $sp, -4
-li $v0, 1
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK +
-add $v0, $v0, $v1
-addi $sp, $sp, -4
-sw $v0, 0($sp)
-#ExpK operation
-lw $v1, 0($sp)
-lw $v0, 4($sp)
-addi $sp, $sp, 8
-#ExpK =
-sw $v1, 0($v0)
-addi $sp, $sp, -4
-sw $v1, 0($sp)
-beq $zero, $zero, label7
-label8:
-#FuncK Void Return
-lw $ra, -4($fp)
-addi $sp, $fp, 0
-lw $fp, 0($sp)
-addi $sp, $sp, -4
-jr $ra
+	# output
+	move $t0, $v0
+	li $v0, 4
+	la $a0, output_str
+	syscall
+	move $v0, $t0
+#->idk x
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	li $t2, 4
+	mul $t2,$t2,$t0
+	la $t1, -48($fp)
+#this idk a[i]
+	add $t1,$t1,$t2
+	lw $t0,0($t1)
+#<-idk x
+	move $a0, $t0
+	li $v0, 1
+	syscall
+	li $v0, 4
+	la $a0, newline
+	syscall
+#->idk i
+	lw $t0,-8($fp)
+#this idk a
+#<-idk i
+	addi $sp, $sp, -4
+	sw $t0,0($sp)
+	li $t0, 1
+	lw $t1,0($sp)
+	add $t0,$t1,$t0
+	addiu $sp, $sp, 4
+	sw $t0, -8($fp)
+	b L11
+L12:
+L8:
+	add $sp, $fp, $zero
+	addiu $sp, $sp, 4
+	lw $ra, -4($fp)
+	lw $fp, 0($fp)
+	j $ra

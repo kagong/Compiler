@@ -84,10 +84,10 @@ static void insertNode( TreeNode * t){
                         }
                         else{
                             if(t->type == Integer){
-                                global_location += WORD;
                                 t-> isglobal = 1;
                                 t -> loc = global_location;
                                 st_insert(t->attr.decl.name,t->lineno,global_location,Var,FALSE,-1,Integer,TRUE,TRUE,t);
+                                global_location += WORD;
                             }
                             else typeError(t->lineno,"variable should be integer");
                         }
@@ -100,10 +100,10 @@ static void insertNode( TreeNode * t){
                 case VarArrK:
                     if(st_lookup(t->attr.decl.name,TRUE)==-1){
                         if(scope==0){
-                            global_location += 4*(t->attr.decl.arr_size);
                             t-> isglobal = 1;
                             t -> loc = global_location;
                             st_insert(t->attr.decl.name,t->lineno,global_location,Var,TRUE,t->attr.decl.arr_size,t->type,TRUE,TRUE,t);
+                            global_location += 4*(t->attr.decl.arr_size);
                         }
                         else{
                             location -= 4*(t->attr.decl.arr_size);
@@ -130,10 +130,10 @@ static void insertNode( TreeNode * t){
                         t-> isglobal = 0;
                         t -> loc = location;
                         if(t->type == Array){
-                            st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
+                            st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,TRUE,t);	
                         }
                         else if(t->type == Integer){
-                            st_insert(t->attr.decl.name,t->lineno,location,Par,FALSE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
+                            st_insert(t->attr.decl.name,t->lineno,location,Par,FALSE,t->attr.decl.arr_size,t->type,FALSE,TRUE,t);	
                         }
                         if(t->sibling == NULL) {
                             location = -4;
@@ -182,7 +182,6 @@ static void insertNode( TreeNode * t){
                     else{
                         t -> isglobal = st_lookup_isglobal(t->attr.decl.name);
                         t -> loc = st_lookup(t->attr.decl.name,FALSE);
-                        printf("%s %d\n",t->attr.decl.name,t->isglobal);
                         temp = st_getnode(t->attr.decl.name);
                         t->node = temp;
                         if(temp == NULL)
