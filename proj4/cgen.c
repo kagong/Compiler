@@ -10,16 +10,18 @@ static int allocate_label(){
 static void genExp( TreeNode * tree);
 static void cGen( TreeNode * tree);
 static void genDec(TreeNode * tree){
-    TreeNode *p1, *p2, *p3;
+    TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
     int savedLoc1, savedLoc2, currentLoc;
     int loc;
     unsigned int count = 0;
     int len;
     TreeNode *temp = NULL;
+    if(tree == NULL)
+        return ;
     switch(tree->kind.decl){//stack 에 알규먼트 저장해주세여
         case FunK:
             temp = p1;
-            while(temp == NULL){
+            while(temp != NULL){
                 ++count;
                 temp = temp -> sibling;
             }
@@ -60,6 +62,8 @@ static void genStmt(TreeNode * tree){
     TreeNode *p1 = tree -> child[0] , *p2 = tree -> child[1] , *p3 = tree ->child [2];
     TreeNode *temp = NULL;
     int label_num1, label_num2;
+    if(tree == NULL)
+        return ;
     switch(tree->kind.stmt){
         case FompndK:
         case CompndK:
@@ -153,6 +157,8 @@ static void genStmt(TreeNode * tree){
 static void genExp( TreeNode * tree){
     int loc;
     TreeNode *p1 = tree->child[0], *p2 = tree->child[1];
+    if(tree == NULL)
+        return ;
     switch (tree->kind.exp){
         case ConstK:
             fprintf(code,"\tli $t0, %d\n",tree->attr.val);
