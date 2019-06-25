@@ -180,7 +180,7 @@ static void insertNode( TreeNode * t){
                     if (st_lookup(t->attr.decl.name,FALSE) == -1)
                         scopeError(t->lineno , "Unknown ID"); 
                     else{
-                        t-> isglobal = st_lookup(t->attr.decl.name,TRUE) == 1 ? 0:1;
+                        t -> isglobal = st_lookup_isglobal(t->attr.decl.name);
                         t -> loc = st_lookup(t->attr.decl.name,FALSE);
                         temp = st_getnode(t->attr.decl.name);
                         if(temp == NULL)

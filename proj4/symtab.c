@@ -71,6 +71,24 @@ void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrs
     }
 
 }
+int st_lookup_isglobal ( char *name){
+     int h = hash(name);
+    ScopeList tmp = total_sym;
+    BucketList l;
+    while(tmp != NULL){
+        if(tmp->valid == FALSE){
+            tmp = tmp->next;
+            continue;
+        }
+        l = (tmp->bucket)[h];
+         while ((l != NULL) && (strcmp(name, l->name) != 0)){
+            l = l->next; 
+        }
+        tmp = tmp ->next;
+    }
+    return tmp == global_sym ? 1 : 0;
+
+}
 int st_lookup_func(char * name){
 	int h = hash(name);
 	ScopeList tmp = global_sym;
@@ -79,7 +97,7 @@ int st_lookup_func(char * name){
 	while((l != NULL) && (strcmp(name, l->name) != 0)) l = l->next;
 	return l == NULL ? -1 : 1;
 }
-int st_lookup ( char * name, int isdec ){
+int st_lookup ( char * name, int isdec){// syntax error만 찾는 용도. reference로 parameter추가하
     int h = hash(name);
     ScopeList tmp = total_sym;
     BucketList l; 

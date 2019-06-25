@@ -57,6 +57,7 @@ void insert_scope(int scope);
 void st_insert ( char * name, int lineno, int loc, isvpf vpf,int isarr, int arrsize,Type type,int isglobal,int isdec,TreeNode *);
 int st_lookup (char* name,int );
 int st_lookup_func(char* name);
+int st_lookup_isglobal ( char *name);
 TreeNode* st_getnode ( char * name);
 /* procedure printSymTab prints a formatted
 * listing of the symbol table contents
