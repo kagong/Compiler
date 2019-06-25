@@ -12,6 +12,7 @@ clean :
 	rm -f scan.c
 	rm -f cm.tab.*
 	rm -f cm.output
+	rm -f *.tm
 
 
 $(TARGET): parser scaner $(OBJS)

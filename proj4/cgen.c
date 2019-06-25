@@ -26,10 +26,10 @@ static void genDec(TreeNode * tree){
                 temp = temp -> sibling;
             }
             fprintf(code,"%s :\n",tree->attr.decl.name);
-            fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//control link
+            fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);//control link
             fprintf(code,"\tsw $fp, %d($sp)\n",0);
             fprintf(code,"\tadd $fp, $sp, $zero\n");
-            fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
+            fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);//return address
             fprintf(code,"\tsw $ra, %d($sp)\n",-WORD);
             cGen(p2);
 
@@ -44,13 +44,13 @@ static void genDec(TreeNode * tree){
             break;
         case VarK:
             if(tree -> isglobal != 1)
-                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);
+                fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);
             //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc);
             break;
         case VarArrK:
             len = tree -> attr.decl.arr_size;
             if(tree -> isglobal != 1)
-                fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD*len);
+                fprintf(code,"\taddi $sp, $sp, %d\n",-WORD*len);
             // for(inti i=0;i<len;i++)
             //   fprintf(code,"\tsw $zero, %d($fp)\n",tree->loc+i*WORD);
             break;
@@ -141,7 +141,7 @@ static void genStmt(TreeNode * tree){
                 temp = tree -> child[0];
                 while(temp != NULL){
                     genExp(temp);
-                    fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);//return address
+                    fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);//return address
                     fprintf(code,"\tsw $t0, %d($sp)\n",0);
                     temp = temp -> sibling;
                 }
@@ -190,11 +190,11 @@ static void genExp( TreeNode * tree){
 					fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
 					fprintf(code,"\tsw $t3, %d($t1)\n",0);
 				}
-				else fprintf(code,"\tsw $t0, %d($%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
+				else fprintf(code,"\tsw $t0, %d(%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
 			}
 			else{
 				cGen(p1);
-				fprintf(code,"\tsubiu $sp, $sp, %d\n",WORD);
+				fprintf(code,"\taddi $sp, $sp, %d\n",-WORD);
 				fprintf(code,"\tsw $t0,%d($sp)\n",0);
 				cGen(p2);
 				fprintf(code,"\tlw $t1,%d($sp)\n",0);
