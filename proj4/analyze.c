@@ -76,7 +76,7 @@ static void insertNode( TreeNode * t){
                         if(scope!=0) {
                             if(t->type == Integer){
                                 location -= WORD;
-                            y1    t->isglobal = 0;
+                                t->isglobal = 0;
                                 t -> loc = location;
                                 st_insert(t->attr.decl.name,t->lineno,location,Var,FALSE,-1,Integer,FALSE,TRUE,t);
                             }
@@ -128,7 +128,7 @@ static void insertNode( TreeNode * t){
                         location = k*WORD;
                         
                         t-> isglobal = 0;
-                        t -> loc = loaction;
+                        t -> loc = location;
                         if(t->type == Array){
                             st_insert(t->attr.decl.name,t->lineno,location,Par,TRUE,t->attr.decl.arr_size,t->type,FALSE,FALSE,t);	
                         }
@@ -156,7 +156,10 @@ static void insertNode( TreeNode * t){
                     break;//FompndK pass
                 case CallK:
                     temp = st_getnode(t->attr.decl.name);
-                    if(temp == NULL)
+                    if(!strcmp(t->attr.decl.name,"input")
+                        || !strcmp(t->attr.decl.name,"output"))
+                        break;
+                    else if(temp == NULL)
                         scopeError(t->lineno , "Unknown function"); 
                     else{
                         if(temp->kind.decl != FunK){
@@ -293,6 +296,9 @@ static void checkNode( TreeNode * t){//postorder traverse
                     t->type = Integer;
                     break;
                 case CallK:
+                    if(!strcmp(t->attr.decl.name,"input")
+                        || !strcmp(t->attr.decl.name,"output"))
+                        break;
                     params = t -> node -> child[0],args = t->child[0];
                     while(params !=NULL){
                         if(args == NULL){

@@ -1,6 +1,6 @@
 CC = gcc
-OBJS = main.o util.o scan.o cm.tab.o symtab.o analyze.o 
-TARGET = project3_18
+OBJS = main.o util.o scan.o cm.tab.o symtab.o analyze.o cgen.o 
+TARGET = project4_18
  
 
 .SUFFIXES : .c .o
@@ -28,3 +28,4 @@ scan.o: globals.h util.h scan.h parse.h scan.c
 cm.tab.o: globals.h util.h parse.h scan.h cm.tab.h cm.tab.c 
 analyze.o: analyze.h analyze.c
 symtab.o: symtab.h symtab.c
+cgen.o: cgen.h cgen.c globals.h

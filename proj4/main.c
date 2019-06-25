@@ -29,7 +29,7 @@ FILE *code;
 int EchoSource = TRUE;
 int TraceScan = FALSE;
 int TraceParse = FALSE;
-int TraceAnalyze = TRUE;
+int TraceAnalyze = FALSE;
 int TraceCode = TRUE;
 
 int Error = FALSE;
@@ -78,9 +78,9 @@ int main( int argc, char * argv[]){
             strncpy(codefile,pgm, fnlen);
             strcat (codefile, ".tm") ;
             code = fopen(codefile, "w");
-            if {code == NULL}{ 
+            if (code == NULL){ 
                 printf ("Unable to open %s\n" ,codefile);
-                exit(l);
+                exit(1);
             }
     
             codeGen(syntaxTree,codefile);
