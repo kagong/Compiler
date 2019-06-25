@@ -105,35 +105,36 @@ static void genStmt(TreeNode * tree){
 
 			if (!strcmp(tree->attr.decl.name, "input"))
             {
-              fprintf(code, "\n# input\n");
-              fprintf(code, "li $v0, 4\n");
-              fprintf(code, "la $a0, input_str\n");
-              fprintf(code, "syscall\n");
-              fprintf(code, "li $v0, 5\n");
-              fprintf(code, "syscall\n");
-              fprintf(code, "move $t0, $v0\n");
+              fprintf(code, "\n\t# input\n");
+              fprintf(code, "\tli $v0, 4\n");
+              fprintf(code, "\tla $a0, input_str\n");
+              fprintf(code, "\tsyscall\n");
+              fprintf(code, "\tli $v0, 5\n");
+              fprintf(code, "\tsyscall\n");
+              fprintf(code, "\tmove $t0, $v0\n");
             
             }            
 			else if (!strcmp(tree->attr.decl.name, "output"))
             {
-                fprintf(code, "\n# output\n");
-                fprintf(code, "move $t0, $v0\n");
-                fprintf(code, "li $v0, 4\n");
-                fprintf(code, "la $a0, output_str\n");
-                fprintf(code, "syscall\n");
-                fprintf(code, "move $v0, $t0\n");
+                fprintf(code, "\n\t# output\n");
+                fprintf(code, "\tmove $t0, $v0\n");
+                fprintf(code, "\tli $v0, 4\n");
+                fprintf(code, "\tla $a0, output_str\n");
+                fprintf(code, "\tsyscall\n");
+                fprintf(code, "\tmove $v0, $t0\n");
                 temp = p1;
                 while(temp != NULL){
                     genExp(temp);
-                    fprintf(code, "move $a0, $t0\n"); // the argument
-                    fprintf(code, "li $v0, 1\n");
-                    fprintf(code, "syscall\n");
+                    fprintf(code, "\tmove $a0, $t0\n"); // the argument
+                    fprintf(code, "\tli $v0, 1\n");
+                    fprintf(code, "\tsyscall\n");
+                    temp = temp -> sibling;
                 }
                 
                 // print newline
-                fprintf(code, "li $v0, 4\n");
-                fprintf(code, "la $a0, newline\n");
-                fprintf(code, "syscall\n");
+                fprintf(code, "\tli $v0, 4\n");
+                fprintf(code, "\tla $a0, newline\n");
+                fprintf(code, "\tsyscall\n");
 
             }
             else{
@@ -189,7 +190,7 @@ static void genExp( TreeNode * tree){
 					fprintf(code,"\tadd $t1,$t1,$t2\n");        //t1 = a + i
 					fprintf(code,"\tsw $t3, %d($t1)\n",0);
 				}
-				else fprintf(code,"\tsw %d($fp),$t0\n",tree->child[0]->loc);
+				else fprintf(code,"\tsw $t0, %d($%s)\n",tree->child[0]->loc, p1->isglobal== 1 ? "$gp" : "$fp");
 			}
 			else{
 				cGen(p1);
@@ -285,9 +286,9 @@ void codeGen(TreeNode * syntaxTree, char * codefile){
 	fprintf(code, ".align 4\n");
 	fprintf(code, ".globl main\n");
 	//initialize
-	fprintf(code, "li $sp, 0x7fffffff");
-	fprintf(code, "li $fp, 0x7fffffff");
-	fprintf(code, "li $gp, 0x10000000");
+	fprintf(code, "\tli $sp, 0x7fffffff\n");
+	fprintf(code, "\tli $fp, 0x7fffffff\n");
+	fprintf(code, "\tli $gp, 0x10000000\n");
 	
 	cGen(syntaxTree);
 }
