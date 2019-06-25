@@ -180,7 +180,7 @@ static void genExp( TreeNode * tree){
                 fprintf(code,"\tlw $t0,%d($t1)\n",0);	
             }
             else{
-                fprintf(code,"\t%s $t0,%d(%s)\n",tree->type == Array ? "la" : "lw",tree->loc, tree->isglobal ? "$gp" : "$fp");
+                fprintf(code,"\t%s $t0,%d(%s)\n#this",tree->type == Array ? "lw" : "lw",tree->loc, tree->isglobal ? "$gp" : "$fp");
             }
             break;
         case OpK:
