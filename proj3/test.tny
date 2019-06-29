@@ -17,7 +17,6 @@ int func(int i){
         int TAcheerup;
         funcc(arr,i/2);
     }
-
     return i;
 }
 
