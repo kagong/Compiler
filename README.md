@@ -11,6 +11,9 @@ project#1
 project#2 
     C- LALR(1) parser
 
-Date:
+project#3 
+    C- semantic analzer
 
-2019-03-27 - proj#1 complete
+project#4 
+    C- generator (mips assembly)
+
